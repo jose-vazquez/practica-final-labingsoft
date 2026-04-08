@@ -148,3 +148,9 @@ button:hover {
   background-color: #f5f8fa;
   cursor: pointer;
 }
+
+/* Mejora visual del username */
+.tuit-header strong {
+  color: #1d9bf0;
+  font-weight: bold;
+}
