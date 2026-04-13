@@ -2,14 +2,14 @@
  * =========================================================
  * CONTROL DE ACCESO
  * =========================================================
- * Esta página solo debe ser accesible si el usuario ya se ha
- * autenticado correctamente.
+ * En esta página necesito comprobar desde el principio que el
+ * usuario ya está autenticado.
  *
- * Si no existe token en sessionStorage, la función requireAuth()
- * redirige automáticamente a login.html.
+ * Si no hay token guardado en sessionStorage, con requireAuth()
+ * lo redirijo automáticamente a login.html.
  *
- * Esta comprobación cumple con el requisito de la práctica:
- * cualquier página de contenido debe verificar que exista el token.
+ * Lo hago así porque en la práctica se pide que cualquier página
+ * de contenido verifique que exista una sesión válida.
  */
 requireAuth();
 
@@ -17,11 +17,11 @@ requireAuth();
  * =========================================================
  * REFERENCIAS A ELEMENTOS DEL DOM
  * =========================================================
- * Guardamos en constantes los elementos de la página que vamos
- * a utilizar desde JavaScript.
+ * Aquí guardo en constantes los elementos de la página que voy
+ * a usar después desde JavaScript.
  *
- * Esto mejora la legibilidad y evita buscar varias veces los
- * mismos elementos en el DOM.
+ * Lo hago así para que el código quede más claro y para no tener
+ * que estar buscando varias veces los mismos elementos en el DOM.
  */
 const homeButton = document.getElementById('homeButton');
 const newTuitButton = document.getElementById('newTuitButton');
@@ -35,35 +35,32 @@ const timeline = document.getElementById('timeline');
  */
 
 /**
- * Botón "Inicio"
- * Recarga la página principal.
+ * En el botón "Inicio" simplemente recargo la página principal.
  */
 homeButton.addEventListener('click', function () {
   window.location.href = 'index.html';
 });
 
 /**
- * Botón "Escribir tuit"
- * De momento todavía no está implementada la creación de tuits,
- * así que dejamos un aviso temporal.
+ * De momento todavía no he implementado la creación de tuits,
+ * así que dejo este botón preparado con un aviso temporal.
  *
- * Más adelante este botón abrirá un diálogo o modal.
+ * Más adelante mi idea es que aquí se abra un diálogo o un modal
+ * para escribir y publicar un nuevo tuit.
  */
 newTuitButton.addEventListener('click', function () {
   alert('La creación de tuits se implementará más adelante.');
 });
 
 /**
- * Botón "Cerrar sesión"
+ * En el botón "Cerrar sesión" sigo este flujo:
+ * 1. Intento cerrar también la sesión en el servidor
+ * 2. Borro la sesión local del navegador
+ * 3. Redirijo al usuario a login.html
  *
- * Flujo:
- * 1. Se intenta cerrar sesión también en el servidor
- * 2. Se borra la sesión local del navegador
- * 3. Se redirige a login.html
- *
- * Aunque falle la petición al backend, en el bloque finally
- * se limpia igualmente la sesión local para no dejar al usuario
- * atrapado dentro de la aplicación.
+ * He decidido hacerlo así porque, aunque falle la llamada al backend,
+ * me interesa limpiar igualmente la sesión local para no dejar al
+ * usuario dentro de la aplicación sin control.
  */
 logoutButton.addEventListener('click', async function () {
   try {
@@ -80,8 +77,8 @@ logoutButton.addEventListener('click', async function () {
  * =========================================================
  * EVENTO PRINCIPAL DE CARGA
  * =========================================================
- * Cuando el DOM de la página ya está cargado, llamamos a la
- * función que obtiene y muestra los últimos tuits.
+ * Cuando el DOM ya está cargado, llamo a la función que se
+ * encarga de obtener y pintar los últimos tuits.
  */
 document.addEventListener('DOMContentLoaded', function () {
   loadTuits();
@@ -91,44 +88,43 @@ document.addEventListener('DOMContentLoaded', function () {
  * =========================================================
  * FUNCIÓN: loadTuits
  * =========================================================
- * OBJETIVO:
- * Obtener los últimos tuits desde la API REST y mostrarlos
- * dinámicamente en la página principal.
+ * Aquí lo que hago es obtener los últimos tuits desde la API REST
+ * y mostrarlos dinámicamente en la página principal.
  *
- * PASOS:
- * 1. Llamar al endpoint /tuits
- * 2. Comprobar el formato de respuesta
- * 3. Limpiar el contenedor actual
- * 4. Crear un bloque HTML por cada tuit
- * 5. Insertarlo en el timeline
+ * El flujo que sigo es este:
+ * 1. Llamo al endpoint /tuits
+ * 2. Compruebo qué formato tiene la respuesta
+ * 3. Limpio el contenedor actual
+ * 4. Creo un bloque HTML por cada tuit
+ * 5. Lo inserto en el timeline
  */
 async function loadTuits() {
   try {
     /**
-     * Llamada a la API.
-     * Solicitamos los 50 últimos tuits comenzando desde offset 0.
+     * Aquí hago la llamada a la API.
+     * En este caso pido los 50 últimos tuits empezando en offset 0.
      */
     const data = await getTuits(50, 0);
 
     /**
-     * Mostramos la respuesta en consola para depuración.
-     * Esto permite ver fácilmente la estructura real del JSON
-     * que devuelve el servidor.
+     * Dejo la respuesta en consola porque me viene bien para ver
+     * la estructura real del JSON que devuelve el servidor y poder
+     * ajustar el render si hace falta.
      */
     console.log(data);
 
     /**
-     * La API puede devolver:
-     * - directamente un array de tuits
-     * - o un objeto que contenga una propiedad con ese array
+     * Aquí contemplo las dos posibilidades más probables:
+     * - que la API devuelva directamente un array de tuits
+     * - o que devuelva un objeto con una propiedad que contenga ese array
      *
-     * Por eso se comprueban ambas posibilidades.
+     * Lo hago así para que el código no dependa de un único formato cerrado.
      */
     const tuits = Array.isArray(data) ? data : (data.tuits || data.items || []);
 
     /**
-     * Si no hay tuits, mostramos un mensaje informativo
-     * en lugar de dejar el contenedor vacío.
+     * Si no hay tuits, muestro un mensaje informativo en lugar de
+     * dejar la zona del timeline vacía.
      */
     if (!tuits.length) {
       timeline.innerHTML = '<p class="info-message">No hay tuits para mostrar.</p>';
@@ -136,31 +132,32 @@ async function loadTuits() {
     }
 
     /**
-     * Limpiamos el contenido anterior antes de pintar los nuevos tuits.
+     * Antes de pintar los nuevos tuits, limpio el contenido que hubiera
+     * ya en pantalla.
      */
     timeline.innerHTML = '';
 
     /**
-     * Recorremos el array de tuits y generamos un bloque HTML por cada uno.
+     * Recorro el array de tuits y voy generando un bloque HTML por cada uno.
      */
     tuits.forEach(function (tuit) {
       /**
-       * Como la estructura exacta del JSON puede variar,
-       * se contemplan varios nombres posibles para cada campo.
+       * Como la estructura exacta del JSON puede variar, aquí compruebo
+       * varios nombres posibles para cada campo.
        *
-       * username:
+       * Para el usuario pruebo con:
        * - username
        * - user
        * - autor
        *
-       * text:
+       * Para el texto pruebo con:
        * - text
        * - content
        * - message
        * - mensaje
        * - texto
        *
-       * Si no existe ningún campo compatible, se muestra un valor por defecto.
+       * Si no encuentro nada compatible, dejo un valor por defecto.
        */
       const username = tuit.username || tuit.user || tuit.autor || 'usuario';
 
@@ -173,20 +170,29 @@ async function loadTuits() {
         'Sin contenido';
 
       /**
-       * Creamos el elemento <article> que contendrá un tuit.
-       * Usamos la clase "tuit" para aplicar estilos CSS específicos.
+       * Aquí creo el elemento <article> que va a contener un tuit.
+       * Le añado la clase "tuit" para poder aplicarle después el estilo CSS.
        */
       const article = document.createElement('article');
       article.classList.add('tuit');
 
       /**
-       * Insertamos el HTML del tuit:
-       * - cabecera con el nombre de usuario
-       * - cuerpo con el texto del mensaje
+       * Aquí inserto el HTML del tuit:
+       * - en la cabecera muestro el nombre de usuario
+       * - en el cuerpo muestro el texto del mensaje
+       *
+       * Además, al username le añado:
+       * - una clase ("user-link")
+       * - un atributo data-username
+       *
+       * Lo hago así porque luego me interesa detectar fácilmente
+       * sobre qué usuario se ha hecho click.
        */
       article.innerHTML = `
         <div class="tuit-header">
-          <strong>@${username}</strong>
+          <strong class="user-link" data-username="${username}">
+            @${username}
+          </strong>
         </div>
         <div class="tuit-body">
           <p>${text}</p>
@@ -194,15 +200,31 @@ async function loadTuits() {
       `;
 
       /**
-       * Finalmente añadimos el tuit al contenedor principal.
+       * Aquí hago que el nombre del usuario no sea solo texto,
+       * sino que también sirva para navegar.
+       *
+       * Lo que hago es recuperar el username desde el atributo
+       * data-username y redirigir a user.html pasándolo en la URL.
+       *
+       * Con esto consigo una navegación básica entre vistas sin usar
+       * frameworks, que es justo el enfoque que pide la práctica.
+       */
+      article.querySelector('.user-link').addEventListener('click', function () {
+        const username = this.dataset.username;
+        window.location.href = `user.html?username=${username}`;
+      });
+
+      /**
+       * Por último, añado el tuit ya construido al contenedor principal.
        */
       timeline.appendChild(article);
     });
 
   } catch (error) {
     /**
-     * Si algo falla (token inválido, error de red, respuesta incorrecta...),
-     * mostramos el error dentro del timeline.
+     * Si falla algo (por ejemplo token inválido, error de red
+     * o respuesta incorrecta), muestro el error directamente
+     * dentro del timeline.
      */
     timeline.innerHTML = `<p class="error-message">${error.message}</p>`;
   }
