@@ -1,109 +1,292 @@
-// URL base de la API REST proporcionada por el profesor
-const API_BASE = 'https://lablsi1.upct.es:8080/minitwitter';
+// URL base de la API
+const API_BASE = "https://lablsi1.upct.es:8080/minitwitter";
+
 
 /**
+ * =========================================================
+ * FUNCIÓN: saveSession
+ * =========================================================
+ * Guarda en sessionStorage los datos de sesión:
+ * - token JWT
+ * - id del usuario autenticado
+ */
+function saveSession(token, userId) {
+  sessionStorage.setItem("token", token);
+  sessionStorage.setItem("userId", userId);
+}
+
+
+/**
+ * =========================================================
+ * FUNCIÓN: getToken
+ * =========================================================
+ * Recupera el token almacenado en sessionStorage.
+ * Se usa para enviar autenticación en cada petición.
+ */
+function getToken() {
+  return sessionStorage.getItem("token");
+}
+
+
+/**
+ * =========================================================
+ * FUNCIÓN: logout
+ * =========================================================
+ * Cierra la sesión del usuario:
+ * - borra los datos almacenados
+ * - redirige al login
+ */
+function logout() {
+  sessionStorage.clear();              // elimina sesión
+  window.location.href = "login.html"; // redirección
+}
+
+
+/**
+ * =========================================================
+ * FUNCIÓN: requireAuth
+ * =========================================================
+ * Comprueba que exista token.
+ * Si no existe → redirige al login.
+ */
+function requireAuth() {
+  const token = getToken();
+
+  if (!token) {
+    window.location.href = "login.html";
+  }
+}
+
+/**
+ * =========================================================
  * FUNCIÓN: loginRequest
- * OBJETIVO: autenticar al usuario contra el backend
- * 
- * ENVÍA:
- *  - username
- *  - password
- * 
- * RECIBE:
- *  - token JWT (necesario para el resto de peticiones)
+ * =========================================================
+ * Realiza la autenticación del usuario contra el endpoint /login.
+ *
+ * Esta API espera exactamente en el body:
+ * - username
+ * - password
+ *
+ * Si el login es correcto:
+ * - recibe un token JWT
+ * - recibe el id del usuario
+ * - guarda ambos en sessionStorage
  */
 async function loginRequest(username, password) {
-  // Realizamos petición POST al endpoint /login
+
+  // Hago la petición POST al endpoint de login
   const response = await fetch(`${API_BASE}/login`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      // Indicamos que enviamos JSON
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json" // indico que envío JSON
     },
     body: JSON.stringify({
-      username: username,
-      password: password
+      username: username, // nombre exacto que pide la API
+      password: password  // nombre exacto que pide la API
     })
   });
 
-  let data = null;
+  // Convierto la respuesta a JSON
+  const data = await response.json();
 
-  try {
-    // Intento parsear la respuesta como JSON
-    data = await response.json();
-  } catch (error) {
-    // Si falla ... 
-    throw new Error('La respuesta del servidor no es válida.');
-  }
-
-  // Si el servidor devuelve error (401, 500, etc.)
+  // Si el servidor responde con error, lo lanzo para mostrarlo en pantalla
   if (!response.ok) {
-    throw new Error(data.message || data.error || 'Error de autenticación.');
+    throw new Error(data.error || data.message || "Error en login");
   }
 
-  // Si todo va bien, devuels los datos (incluye token)
+  // Guardo token e id del usuario en sessionStorage
+  // Ajusta estas claves si la API devuelve otros nombres
+  saveSession(data.token, data.id);
+
   return data;
 }
 
-/**
- * FUNCIÓN: logoutRequest
- * OBJETIVO: cerrar sesión en el servidor
- * 
- * IMPORTANTE:
- *  - Se envía el token en la cabecera Authorization
- */
-async function logoutRequest() {
-  const token = getToken(); // función de auth.js
-
-  const response = await fetch(`${API_BASE}/logout`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      // Token JWT necesario para identificar al usuario
-      'Authorization': `Bearer ${token}`
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error('No se pudo cerrar la sesión en el servidor.');
-  }
-
-  return true;
-}
 
 /**
- * FUNCIÓN: getTuits
- * OBJETIVO: obtener los últimos tuits del sistema
- * 
- * PARÁMETROS:
- *  - limit: número de tuits
- *  - offset: desplazamiento (paginación)
- * 
- * IMPORTANTE:
- *  - requiere token JWT
- */
-async function getTuits(limit = 50, offset = 0) {
+ * =========================================================
+ * FUNCIÓN: getAuthHeaders
+ * =========================================================
+ * Genera las cabeceras necesarias para peticiones autenticadas.
+ *
+ * Incluye:
+ * - Content-Type JSON
+ * - Authorization con Bearer token
+ * - x-access-token (compatibilidad)
+ 
+function getAuthHeaders() {
   const token = getToken();
 
-  const response = await fetch(`${API_BASE}/tuits?limit=${limit}&offset=${offset}`, {
-    method: 'GET',
-    headers: {
-      // Autenticación obligatoria
-      'Authorization': `Bearer ${token}`
+  return {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`, // estándar JWT
+    "x-access-token": token             // fallback
+  };
+}*/
+
+/**
+ * =========================================================
+ * FUNCIÓN: getAuthHeaders
+ * =========================================================
+ * Genera las cabeceras para las peticiones autenticadas.
+ *
+ * Importante:
+ * Aquí SOLO envío la cabecera Authorization.
+ *
+ * Antes también enviábamos x-access-token, pero eso estaba
+ * provocando un preflight CORS que el servidor no acepta
+ * correctamente en /tuits.
+ */
+function getAuthHeaders() {
+  const token = getToken();
+
+  return {
+    "Authorization": `Bearer ${token}`
+  };
+}
+
+
+/**
+ * =========================================================
+ * FUNCIÓN: getTuits
+ * =========================================================
+ * Obtiene los últimos tuits con paginación.
+ *
+ * Parámetros:
+ * - limit  -> número de tuits
+ * - offset -> desplazamiento
+ */
+async function getTuits(limit = 50, offset = 0) {
+
+  const response = await fetch(
+    `${API_BASE}/tuits?limit=${limit}&offset=${offset}`, {
+      method: "GET",
+      headers: getAuthHeaders() // requiere token
     }
-  });
+  );
 
-  let data = null;
-
-  try {
-    data = await response.json();
-  } catch (error) {
-    throw new Error('La respuesta de /tuits no es válida.');
-  }
+  const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || data.error || 'Error al obtener los tuits.');
+    throw new Error(data.error || "Error al obtener tuits");
   }
 
   return data;
+}
+
+
+/**
+ * =========================================================
+ * FUNCIÓN: createTuit
+ * =========================================================
+ * Crea un nuevo tuit enviando:
+ * - texto
+ * - media_type
+ * - media_url
+ *
+ * IMPORTANTE:
+ * El token debe ir en formato:
+ *              Authorization: Bearer <token>
+ */
+async function createTuit(text, mediaType, mediaUrl) {
+
+  const token = getToken();
+
+  const payload = {
+    texto: text,
+    media_type: mediaType || "",
+    media_url: mediaUrl || ""
+  };
+
+  const response = await fetch(`${API_BASE}/tuit`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`   // 🔴 AQUÍ ESTÁ EL FIX
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || data.message || "Error al crear el tuit");
+  }
+
+  return data;
+}
+
+
+/**
+ * =========================================================
+ * FUNCIÓN: likeTuit
+ * =========================================================
+ * Envía una petición PUT para dar like a un tuit.
+ */
+async function likeTuit(id) {
+
+  const response = await fetch(`${API_BASE}/tuit/${id}/like`, {
+    method: "PUT",
+    headers: getAuthHeaders()
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al dar like");
+  }
+}
+
+
+/**
+ * =========================================================
+ * FUNCIÓN: unlikeTuit
+ * =========================================================
+ * Envía una petición DELETE para quitar el like.
+ */
+async function unlikeTuit(id) {
+
+  const response = await fetch(`${API_BASE}/tuit/${id}/like`, {
+    method: "DELETE",
+    headers: getAuthHeaders()
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al quitar like");
+  }
+}
+
+
+/**
+ * =========================================================
+ * FUNCIÓN: retuit
+ * =========================================================
+ * Realiza un retuit mediante petición PUT.
+ */
+async function retuit(id) {
+
+  const response = await fetch(`${API_BASE}/tuit/${id}/retuit`, {
+    method: "PUT",
+    headers: getAuthHeaders()
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al hacer retuit");
+  }
+}
+
+
+/**
+ * =========================================================
+ * FUNCIÓN: unretuit
+ * =========================================================
+ * Elimina un retuit mediante petición DELETE.
+ */
+async function unretuit(id) {
+
+  const response = await fetch(`${API_BASE}/tuit/${id}/retuit`, {
+    method: "DELETE",
+    headers: getAuthHeaders()
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al quitar retuit");
+  }
 }

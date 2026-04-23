@@ -148,3 +148,31 @@ button:hover {
   background-color: #f5f8fa;
   cursor: pointer;
 }
+
+/* =====================================================
+   FORMULARIO DE CREACIÓN DE TUIT
+   ===================================================== */
+
+/*
+ * Aquí doy el mismo estilo base a textarea y select
+ * para que el formulario tenga una apariencia coherente
+ * con el login y con el resto de la aplicación.
+ */
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #cfd6dd;
+  border-radius: 6px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+/*
+ * Evito que el textarea se pueda redimensionar en horizontal
+ * para que no rompa el diseño de la página.
+ */
+.form-group textarea {
+  resize: vertical;
+}
