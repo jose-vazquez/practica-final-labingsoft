@@ -106,27 +106,6 @@ async function loginRequest(username, password) {
  * =========================================================
  * FUNCIÓN: getAuthHeaders
  * =========================================================
- * Genera las cabeceras necesarias para peticiones autenticadas.
- *
- * Incluye:
- * - Content-Type JSON
- * - Authorization con Bearer token
- * - x-access-token (compatibilidad)
- 
-function getAuthHeaders() {
-  const token = getToken();
-
-  return {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${token}`, // estándar JWT
-    "x-access-token": token             // fallback
-  };
-}*/
-
-/**
- * =========================================================
- * FUNCIÓN: getAuthHeaders
- * =========================================================
  * Genera las cabeceras para las peticiones autenticadas.
  *
  * Importante:
@@ -215,23 +194,28 @@ async function createTuit(text, mediaType, mediaUrl) {
   return data;
 }
 
-
 /**
  * =========================================================
  * FUNCIÓN: likeTuit
  * =========================================================
- * Envía una petición PUT para dar like a un tuit.
+ * Envía una petición PUT al endpoint:
+ * /tuit/{id_tuit}/like
+ *
+ * Sirve para dar like a un tuit.
  */
-async function likeTuit(id) {
-
-  const response = await fetch(`${API_BASE}/tuit/${id}/like`, {
+async function likeTuit(idTuit) {
+  const response = await fetch(`${API_BASE}/tuit/${idTuit}/like`, {
     method: "PUT",
     headers: getAuthHeaders()
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    throw new Error("Error al dar like");
+    throw new Error(data.error || data.message || "Error al dar like");
   }
+
+  return data;
 }
 
 
@@ -239,18 +223,24 @@ async function likeTuit(id) {
  * =========================================================
  * FUNCIÓN: unlikeTuit
  * =========================================================
- * Envía una petición DELETE para quitar el like.
+ * Envía una petición DELETE al endpoint:
+ * /tuit/{id_tuit}/like
+ *
+ * Sirve para quitar el like de un tuit.
  */
-async function unlikeTuit(id) {
-
-  const response = await fetch(`${API_BASE}/tuit/${id}/like`, {
+async function unlikeTuit(idTuit) {
+  const response = await fetch(`${API_BASE}/tuit/${idTuit}/like`, {
     method: "DELETE",
     headers: getAuthHeaders()
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    throw new Error("Error al quitar like");
+    throw new Error(data.error || data.message || "Error al quitar like");
   }
+
+  return data;
 }
 
 
@@ -258,18 +248,24 @@ async function unlikeTuit(id) {
  * =========================================================
  * FUNCIÓN: retuit
  * =========================================================
- * Realiza un retuit mediante petición PUT.
+ * Envía una petición PUT al endpoint:
+ * /tuit/{id_tuit}/retuit
+ *
+ * Sirve para hacer retuit de un tuit.
  */
-async function retuit(id) {
-
-  const response = await fetch(`${API_BASE}/tuit/${id}/retuit`, {
+async function retuit(idTuit) {
+  const response = await fetch(`${API_BASE}/tuit/${idTuit}/retuit`, {
     method: "PUT",
     headers: getAuthHeaders()
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    throw new Error("Error al hacer retuit");
+    throw new Error(data.error || data.message || "Error al hacer retuit");
   }
+
+  return data;
 }
 
 
@@ -277,16 +273,22 @@ async function retuit(id) {
  * =========================================================
  * FUNCIÓN: unretuit
  * =========================================================
- * Elimina un retuit mediante petición DELETE.
+ * Envía una petición DELETE al endpoint:
+ * /tuit/{id_tuit}/retuit
+ *
+ * Sirve para quitar el retuit.
  */
-async function unretuit(id) {
-
-  const response = await fetch(`${API_BASE}/tuit/${id}/retuit`, {
+async function unretuit(idTuit) {
+  const response = await fetch(`${API_BASE}/tuit/${idTuit}/retuit`, {
     method: "DELETE",
     headers: getAuthHeaders()
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    throw new Error("Error al quitar retuit");
+    throw new Error(data.error || data.message || "Error al quitar retuit");
   }
+
+  return data;
 }
