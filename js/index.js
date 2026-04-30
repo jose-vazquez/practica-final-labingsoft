@@ -166,6 +166,62 @@ function renderTuits(tuits) {
     // Inserto el HTML generado en el article
     article.innerHTML = html;
 
+
+    /**
+     * =========================================================
+     * EVENTO: LIKE
+     * =========================================================
+     * Cuando el usuario pulsa el botón Like:
+     * - recupero el id del tuit desde data-id
+     * - llamo al endpoint PUT /tuit/{id_tuit}/like
+     * - recargo el timeline para ver el cambio
+     */
+    const likeButton = article.querySelector(".like-btn");
+
+    if (likeButton) {
+      likeButton.addEventListener("click", async function () {
+        try {
+          const idTuit = this.dataset.id;
+
+          await likeTuit(idTuit);
+
+          await loadTuits();
+
+        } catch (error) {
+          console.error("Error al dar like:", error);
+          alert(error.message || "No se pudo dar like al tuit.");
+        }
+      });
+    }
+
+    /**
+     * =========================================================
+     * EVENTO: RETUIT
+     * =========================================================
+     * Cuando el usuario pulsa el botón RT:
+     * - recupero el id del tuit desde data-id
+     * - llamo al endpoint PUT /tuit/{id_tuit}/retuit
+     * - recargo el timeline para mostrar el retuit
+     */
+    const retuitButton = article.querySelector(".retuit-btn");
+
+    if (retuitButton) {
+      retuitButton.addEventListener("click", async function () {
+        try {
+          const idTuit = this.dataset.id;
+
+          await retuit(idTuit);
+
+          await loadTuits();
+
+        } catch (error) {
+          console.error("Error al hacer retuit:", error);
+          alert(error.message || "No se pudo hacer retuit.");
+        }
+      });
+    }
+
+      
     /**
      * Hago clickable el nombre de usuario para ir al perfil.
      */
