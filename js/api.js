@@ -157,30 +157,34 @@ async function getTuits(limit = 50, offset = 0) {
  * =========================================================
  * FUNCIÓN: createTuit
  * =========================================================
- * Crea un nuevo tuit enviando:
- * - texto
- * - media_type
- * - media_url
+ * Crea un nuevo tuit.
  *
- * IMPORTANTE:
- * El token debe ir en formato:
- *              Authorization: Bearer <token>
+ * Siempre envío:
+ * - texto
+ *
+ * Solo envío multimedia si el usuario ha elegido un tipo
+ * y ha escrito una URL.
  */
 async function createTuit(text, mediaType, mediaUrl) {
 
   const token = getToken();
 
+  // Objeto base: solo texto obligatorio
   const payload = {
-    texto: text,
-    media_type: mediaType || "",
-    media_url: mediaUrl || ""
+    texto: text
   };
+
+  // Solo añado multimedia si ambos campos tienen valor
+  if (mediaType && mediaUrl) {
+    payload.media_type = mediaType;
+    payload.media_url = mediaUrl;
+  }
 
   const response = await fetch(`${API_BASE}/tuit`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`   // 🔴 AQUÍ ESTÁ EL FIX
+      "Authorization": `Bearer ${token}`
     },
     body: JSON.stringify(payload)
   });

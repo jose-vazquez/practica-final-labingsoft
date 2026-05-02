@@ -153,8 +153,8 @@ function renderTuits(tuits) {
      */
     html += `
       <div class="tweet-actions">
-        <button type="button" data-id="${id}" class="like-btn">Like</button>
-        <button type="button" data-id="${id}" class="retuit-btn">RT</button>
+        <button type="button" data-id="${id}" class="like-btn">🤍 Like</button>
+        <button type="button" data-id="${id}" class="retuit-btn">🔁 RT</button>
         <button type="button" data-id="${id}" class="reply-btn">Responder</button>
       </div>
 
@@ -167,14 +167,14 @@ function renderTuits(tuits) {
     article.innerHTML = html;
 
 
-    /**
+      /**
      * =========================================================
      * EVENTO: LIKE
      * =========================================================
      * Cuando el usuario pulsa el botón Like:
      * - recupero el id del tuit desde data-id
-     * - llamo al endpoint PUT /tuit/{id_tuit}/like
-     * - recargo el timeline para ver el cambio
+     * - detecto si ya estaba marcado por el texto del botón
+     * - llamo a likeTuit o unlikeTuit según corresponda
      */
     const likeButton = article.querySelector(".like-btn");
 
@@ -183,13 +183,20 @@ function renderTuits(tuits) {
         try {
           const idTuit = this.dataset.id;
 
-          await likeTuit(idTuit);
+          // Detecto estado por el texto del botón
+          const isLiked = this.textContent.includes("❤️");
 
-          await loadTuits();
+          if (isLiked) {
+            await unlikeTuit(idTuit);
+            this.textContent = "🤍 Like";
+          } else {
+            await likeTuit(idTuit);
+            this.textContent = "❤️ Liked";
+          }
 
         } catch (error) {
-          console.error("Error al dar like:", error);
-          alert(error.message || "No se pudo dar like al tuit.");
+          console.error("Error en like:", error);
+          alert(error.message || "No se pudo cambiar el like.");
         }
       });
     }
@@ -201,7 +208,7 @@ function renderTuits(tuits) {
      * Cuando el usuario pulsa el botón RT:
      * - recupero el id del tuit desde data-id
      * - llamo al endpoint PUT /tuit/{id_tuit}/retuit
-     * - recargo el timeline para mostrar el retuit
+     * - cambio visualmente el texto del botón
      */
     const retuitButton = article.querySelector(".retuit-btn");
 
@@ -210,17 +217,22 @@ function renderTuits(tuits) {
         try {
           const idTuit = this.dataset.id;
 
-          await retuit(idTuit);
+          const isRetuit = this.textContent.includes("✔");
 
-          await loadTuits();
+          if (isRetuit) {
+            await unretuit(idTuit);
+            this.textContent = "🔁 RT";
+          } else {
+            await retuit(idTuit);
+            this.textContent = "✔ RT";
+          }
 
         } catch (error) {
-          console.error("Error al hacer retuit:", error);
-          alert(error.message || "No se pudo hacer retuit.");
+          console.error("Error en retuit:", error);
+          alert(error.message || "No se pudo cambiar el retuit.");
         }
       });
     }
-
       
     /**
      * Hago clickable el nombre de usuario para ir al perfil.
