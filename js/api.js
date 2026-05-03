@@ -296,3 +296,31 @@ async function unretuit(idTuit) {
 
   return data;
 }
+
+/**
+ * =========================================================
+ * FUNCIÓN: getUserTuits
+ * =========================================================
+ * Obtiene los tuits de un usuario concreto.
+ *
+ * Endpoint:
+ * GET /usuario/{username}/tuits
+ */
+async function getUserTuits(username, limit = 50, offset = 0) {
+
+  const response = await fetch(
+    `${API_BASE}/usuario/${username}/tuits?limit=${limit}&offset=${offset}`,
+    {
+      method: "GET",
+      headers: getAuthHeaders()
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Error al obtener tuits del usuario");
+  }
+
+  return data;
+}
