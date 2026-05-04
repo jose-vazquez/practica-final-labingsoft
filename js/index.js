@@ -11,16 +11,12 @@
  */
 async function loadTuits() {
   try {
-    // Pido los últimos 50 tuits
     const response = await getTuits(50, 0);
 
-    // Lo dejo en consola para depuración
     console.log("Respuesta completa /tuits:", response);
 
-    // Extraigo el array real de tuits
     const tuits = response.tuits || [];
 
-    // Llamo al renderizado
     renderTuits(tuits);
 
   } catch (error) {
@@ -40,39 +36,25 @@ async function loadTuits() {
  * =========================================================
  * Esta función recorre el array de tuits recibido y genera
  * el HTML de cada uno.
- *
- * Aquí uso los nombres reales que devuelve la API:
- * - id_tuit
- * - username
- * - display_name
- * - texto
- * - fecha_creacion
- * - media_type
- * - media_url
  */
 function renderTuits(tuits) {
   const container = document.getElementById("timeline");
 
-  // Si no existe el contenedor, paro y aviso
   if (!container) {
     console.error("No existe el elemento con id='timeline'");
     return;
   }
 
-  // Limpio el contenido inicial del HTML
   container.innerHTML = "";
 
-  // Si no hay tuits, muestro mensaje
   if (!tuits.length) {
     container.innerHTML = `<p class="info-message">No hay tuits para mostrar.</p>`;
     return;
   }
 
-  // Recorro el array de tuits
   tuits.forEach(function (tuit) {
     console.log("Tuit individual:", tuit);
 
-    // Campos reales de la API
     const id = tuit.id_tuit;
     const username = tuit.username || "usuario";
     const displayName = tuit.display_name || username;
@@ -81,11 +63,9 @@ function renderTuits(tuits) {
     const mediaType = tuit.media_type || "";
     const mediaUrl = tuit.media_url || "";
 
-    // Creo el article del tuit
     const article = document.createElement("article");
     article.className = "tweet-card";
 
-    // Construyo el HTML base
     let html = `
       <div class="tweet-header">
         <strong class="user-link" data-username="${username}">${displayName}</strong>
@@ -101,10 +81,6 @@ function renderTuits(tuits) {
      * =========================================================
      * BLOQUE: render multimedia
      * =========================================================
-     * Si el tuit tiene multimedia, la añado según el tipo:
-     * - image   -> img
-     * - video   -> video mp4
-     * - youtube -> iframe embebido
      */
     if (mediaType && mediaUrl) {
       if (mediaType === "image") {
@@ -147,9 +123,6 @@ function renderTuits(tuits) {
      * =========================================================
      * BLOQUE: acciones del tuit
      * =========================================================
-     * Dejo los botones básicos preparados.
-     * Luego se les puede conectar la lógica real de like,
-     * retuit y responder.
      */
     html += `
       <div class="tweet-actions">
@@ -163,40 +136,43 @@ function renderTuits(tuits) {
       </div>
     `;
 
-    // Inserto el HTML generado en el article
     article.innerHTML = html;
 
-
-      /**
+    /**
      * =========================================================
      * EVENTO: LIKE
      * =========================================================
-     * Cuando el usuario pulsa el botón Like:
-     * - recupero el id del tuit desde data-id
-     * - detecto si ya estaba marcado por el texto del botón
-     * - llamo a likeTuit o unlikeTuit según corresponda
+     * Cuando el usuario pulsa Like:
+     * - bloqueo el botón para evitar doble click
+     * - muestro feedback visual
+     * - llamo a la API
+     * - recargo el timeline para sincronizar con backend
      */
     const likeButton = article.querySelector(".like-btn");
 
     if (likeButton) {
       likeButton.addEventListener("click", async function () {
-        try {
-          const idTuit = this.dataset.id;
+        const idTuit = this.dataset.id;
 
-          // Detecto estado por el texto del botón
-          const isLiked = this.textContent.includes("❤️");
+        this.disabled = true;
+        this.textContent = "⏳...";
+
+        try {
+          const isLiked = this.classList.contains("liked");
 
           if (isLiked) {
             await unlikeTuit(idTuit);
-            this.textContent = "🤍 Like";
           } else {
             await likeTuit(idTuit);
-            this.textContent = "❤️ Liked";
           }
+
+          await loadTuits();
 
         } catch (error) {
           console.error("Error en like:", error);
           alert(error.message || "No se pudo cambiar el like.");
+          this.disabled = false;
+          this.textContent = "🤍 Like";
         }
       });
     }
@@ -205,39 +181,46 @@ function renderTuits(tuits) {
      * =========================================================
      * EVENTO: RETUIT
      * =========================================================
-     * Cuando el usuario pulsa el botón RT:
-     * - recupero el id del tuit desde data-id
-     * - llamo al endpoint PUT /tuit/{id_tuit}/retuit
-     * - cambio visualmente el texto del botón
+     * Cuando el usuario pulsa RT:
+     * - bloqueo el botón para evitar doble click
+     * - muestro feedback visual
+     * - llamo a la API
+     * - recargo el timeline para sincronizar con backend
      */
     const retuitButton = article.querySelector(".retuit-btn");
 
     if (retuitButton) {
       retuitButton.addEventListener("click", async function () {
-        try {
-          const idTuit = this.dataset.id;
+        const idTuit = this.dataset.id;
 
-          const isRetuit = this.textContent.includes("✔");
+        this.disabled = true;
+        this.textContent = "⏳...";
+
+        try {
+          const isRetuit = this.classList.contains("retweeted");
 
           if (isRetuit) {
             await unretuit(idTuit);
-            this.textContent = "🔁 RT";
           } else {
             await retuit(idTuit);
-            this.textContent = "✔ RT";
           }
+
+          await loadTuits();
 
         } catch (error) {
           console.error("Error en retuit:", error);
           alert(error.message || "No se pudo cambiar el retuit.");
+          this.disabled = false;
+          this.textContent = "🔁 RT";
         }
       });
     }
-      
+
     /**
      * Hago clickable el nombre de usuario para ir al perfil.
      */
     const userLink = article.querySelector(".user-link");
+
     if (userLink) {
       userLink.addEventListener("click", function () {
         const clickedUsername = this.dataset.username;
@@ -245,7 +228,6 @@ function renderTuits(tuits) {
       });
     }
 
-    // Añado el tuit al timeline
     container.appendChild(article);
   });
 }
@@ -255,8 +237,7 @@ function renderTuits(tuits) {
  * =========================================================
  * FUNCIÓN: getYoutubeEmbedUrl
  * =========================================================
- * Convierte una URL normal de YouTube en una URL embebida
- * para poder mostrarla dentro de un iframe.
+ * Convierte una URL normal de YouTube en una URL embebida.
  */
 function getYoutubeEmbedUrl(url) {
   const match = url.match(/[?&]v=([^&]+)/);
@@ -279,35 +260,29 @@ function getYoutubeEmbedUrl(url) {
  * - cargo el timeline
  */
 document.addEventListener("DOMContentLoaded", function () {
-  // Verifico autenticación
   requireAuth();
 
-  // Referencias a botones
   const homeButton = document.getElementById("homeButton");
   const newTuitButton = document.getElementById("newTuitButton");
   const logoutButton = document.getElementById("logoutButton");
 
-  // Botón inicio
   if (homeButton) {
     homeButton.addEventListener("click", function () {
       window.location.href = "index.html";
     });
   }
 
-  // Botón escribir tuit
   if (newTuitButton) {
     newTuitButton.addEventListener("click", function () {
       window.location.href = "create.html";
     });
   }
 
-  // Botón cerrar sesión
   if (logoutButton) {
     logoutButton.addEventListener("click", function () {
       logout();
     });
   }
 
-  // Cargo tuits
   loadTuits();
 });
