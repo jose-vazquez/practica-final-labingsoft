@@ -152,30 +152,45 @@ function renderTuits(tuits) {
 
     if (likeButton) {
       likeButton.addEventListener("click", async function () {
-        const idTuit = this.dataset.id;
+      const idTuit = this.dataset.id;
 
-        this.disabled = true;
-        this.textContent = "⏳...";
+      this.disabled = true;
+      this.textContent = "⏳...";
+      this.classList.add("processing");
 
-        try {
-          const isLiked = this.classList.contains("liked");
+      try {
+        const isLiked = this.classList.contains("liked");
 
-          if (isLiked) {
-            await unlikeTuit(idTuit);
-          } else {
-            await likeTuit(idTuit);
-          }
+        if (isLiked) {
+          await unlikeTuit(idTuit);
 
-          await loadTuits();
-
-        } catch (error) {
-          console.error("Error en like:", error);
-          alert(error.message || "No se pudo cambiar el like.");
-          this.disabled = false;
           this.textContent = "🤍 Like";
+          this.classList.remove("liked");
+
+        } else {
+          await likeTuit(idTuit);
+
+          this.textContent = "❤️ Liked";
+          this.classList.add("liked");
         }
-      });
-    }
+
+        setTimeout(function () {
+          loadTuits();
+        }, 500);
+
+      } catch (error) {
+        console.error("Error en like:", error);
+
+        alert(error.message || "No se pudo cambiar el like.");
+
+        likeButton.disabled = false;
+        likeButton.textContent = "🤍 Like";
+
+        likeButton.classList.remove("liked");
+        likeButton.classList.remove("processing");
+      }
+  });
+}
 
     /**
      * =========================================================
@@ -189,32 +204,47 @@ function renderTuits(tuits) {
      */
     const retuitButton = article.querySelector(".retuit-btn");
 
-    if (retuitButton) {
-      retuitButton.addEventListener("click", async function () {
-        const idTuit = this.dataset.id;
+  if (retuitButton) {
+    retuitButton.addEventListener("click", async function () {
+    const idTuit = this.dataset.id;
 
-        this.disabled = true;
-        this.textContent = "⏳...";
+    this.disabled = true;
+    this.textContent = "⏳...";
+    this.classList.add("processing");
 
-        try {
-          const isRetuit = this.classList.contains("retweeted");
+    try {
+      const isRetuit = this.classList.contains("retweeted");
 
-          if (isRetuit) {
-            await unretuit(idTuit);
-          } else {
-            await retuit(idTuit);
-          }
+      if (isRetuit) {
+        await unretuit(idTuit);
 
-          await loadTuits();
+        this.textContent = "🔁 RT";
+        this.classList.remove("retweeted");
 
-        } catch (error) {
-          console.error("Error en retuit:", error);
-          alert(error.message || "No se pudo cambiar el retuit.");
-          this.disabled = false;
-          this.textContent = "🔁 RT";
-        }
-      });
-    }
+      } else {
+        await retuit(idTuit);
+
+        this.textContent = "✅ Retuiteado";
+        this.classList.add("retweeted");
+      }
+
+      setTimeout(function () {
+        loadTuits();
+      }, 500);
+
+    } catch (error) {
+      console.error("Error en retuit:", error);
+
+      alert(error.message || "No se pudo cambiar el retuit.");
+
+      retuitButton.disabled = false;
+      retuitButton.textContent = "🔁 RT";
+
+      retuitButton.classList.remove("retweeted");
+      retuitButton.classList.remove("processing");
+      }
+    });
+  }
 
     /**
      * Hago clickable el nombre de usuario para ir al perfil.

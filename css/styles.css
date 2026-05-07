@@ -346,3 +346,19 @@ button:disabled {
     height: 220px;
   }
 }
+
+.like-btn.liked {
+  background-color: #ffe6ef;
+  color: #e0245e;
+}
+
+.retuit-btn.retweeted {
+  background-color: #e3fcef;
+  color: #17bf63;
+}
+
+.like-btn.processing,
+.retuit-btn.processing {
+  background-color: #f1f1f1;
+  color: #666;
+}
