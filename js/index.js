@@ -128,7 +128,7 @@ function renderTuits(tuits) {
       <div class="tweet-actions">
         <button type="button" data-id="${id}" class="like-btn">🤍 Like</button>
         <button type="button" data-id="${id}" class="retuit-btn">🔁 RT</button>
-        <button type="button" data-id="${id}" class="reply-btn">Responder</button>
+        <button type="button" class="reply-btn" disabled> Próximamente </button>
       </div>
 
       <div class="tweet-footer">
