@@ -1,2 +1,6 @@
-errores.txt
-*.bak
+﻿node_modules/
+backend/database.db
+.env
+.DS_Store
+Thumbs.db
+.vscode/

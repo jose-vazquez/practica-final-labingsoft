@@ -1,0 +1,283 @@
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> rm -rf css html js
+Get-Process : No se encuentra ningún parámetro de posición que acepte el argumento '-'.
+En línea: 1 Carácter: 1
++ PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\Proye ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Get-Process], ParameterBindingException
+    + FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.GetProcessCommand
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> Remove-Item : No se encuentra ningún parámetro que coincida con el nombre del parámetro 'rf'.
+Remove-Item : No se encuentra ningún parámetro de posición que acepte el argumento 'No'.
+En línea: 1 Carácter: 1
++ Remove-Item : No se encuentra ningún parámetro que coincida con el no ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Remove-Item], ParameterBindingException
+    + FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.RemoveItemCommand
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> En línea: 1 Carácter: 4
+En : El término 'En' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si escribió
+correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 1
++ En línea: 1 Carácter: 4
++ ~~
+    + CategoryInfo          : ObjectNotFound: (En:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> + rm -rf css html js
+En línea: 1 Carácter: 2
++ + rm -rf css html js
++  ~
+Falta una expresión después del operador unario '+'.
+En línea: 1 Carácter: 3
++ + rm -rf css html js
++   ~~
+Token 'rm' inesperado en la expresión o la instrucción.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingExpressionAfterOperator
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> +    ~~~
+En línea: 1 Carácter: 2
++ +    ~~~
++  ~
+Falta una expresión después del operador unario '+'.
+En línea: 1 Carácter: 6
++ +    ~~~
++      ~~~
+Token '~~~' inesperado en la expresión o la instrucción.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingExpressionAfterOperator
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>     + CategoryInfo          : InvalidArgument: (:) [Remove-Item], ParameterBindingException
+En línea: 1 Carácter: 6
++     + CategoryInfo          : InvalidArgument: (:) [Remove-Item], Par ...
++      ~
+Falta una expresión después del operador unario '+'.
+En línea: 1 Carácter: 7
++     + CategoryInfo          : InvalidArgument: (:) [Remove-Item], Par ...
++       ~~~~~~~~~~~~
+Token 'CategoryInfo' inesperado en la expresión o la instrucción.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingExpressionAfterOperator
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>     + FullyQualifiedErrorId : NamedParameterNotFound,Microsoft.PowerShell.Commands.RemoveItemCommand
+En línea: 1 Carácter: 6
++     + FullyQualifiedErrorId : NamedParameterNotFound,Microsoft.PowerS ...
++      ~
+Falta una expresión después del operador unario '+'.
+En línea: 1 Carácter: 7
++     + FullyQualifiedErrorId : NamedParameterNotFound,Microsoft.PowerS ...
++       ~~~~~~~~~~~~~~~~~~~~~
+Token 'FullyQualifiedErrorId' inesperado en la expresión o la instrucción.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingExpressionAfterOperator
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> Remove-Item css -Recurse -Force
+Get-Process : No se encuentra ningún parámetro de posición que acepte el argumento '-'.
+En línea: 1 Carácter: 1
++ PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\Proye ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Get-Process], ParameterBindingException
+    + FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.GetProcessCommand
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> Remove-Item html -Recurse -Force
+Get-Process : No se encuentra ningún parámetro de posición que acepte el argumento '-'.
+En línea: 1 Carácter: 1
++ PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\Proye ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Get-Process], ParameterBindingException
+    + FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.GetProcessCommand
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> Remove-Item js -Recurse -Force
+Get-Process : No se encuentra ningún parámetro de posición que acepte el argumento '-'.
+En línea: 1 Carácter: 1
++ PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\Proye ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Get-Process], ParameterBindingException
+    + FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.GetProcessCommand
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> dir
+Get-Process : No se encuentra ningún parámetro de posición que acepte el argumento '-'.
+En línea: 1 Carácter: 1
++ PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\Proye ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Get-Process], ParameterBindingException
+    + FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.GetProcessCommand
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>     Directorio: C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4
+Directorio: : El término 'Directorio:' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si
+escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 5
++     Directorio: C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito. ...
++     ~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Directorio::String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> Mode                 LastWriteTime         Length Name
+Parámetro no válido: LastWriteTime
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> ----                 -------------         ------ ----
+>> -a---l        06/04/2026     11:04            111 README.md
+En línea: 1 Carácter: 55
++ ----                 -------------         ------ ----
++                                                       ~
+Falta una expresión después del operador unario '--'.
+En línea: 2 Carácter: 1
++ -a---l        06/04/2026     11:04            111 README.md
++ ~~
+Token '-a' inesperado en la expresión o la instrucción.
+En línea: 2 Carácter: 3
++ -a---l        06/04/2026     11:04            111 README.md
++   ~~~~
+Token '---l' inesperado en la expresión o la instrucción.
+En línea: 2 Carácter: 5
++ -a---l        06/04/2026     11:04            111 README.md
++     ~
+Falta una expresión después del operador unario '--'.
+En línea: 2 Carácter: 5
++ -a---l        06/04/2026     11:04            111 README.md
++     ~~
+Token '-l' inesperado en la expresión o la instrucción.
+En línea: 2 Carácter: 15
++ -a---l        06/04/2026     11:04            111 README.md
++               ~~~~~~~~~~
+Token '06/04/2026' inesperado en la expresión o la instrucción.
+En línea: 2 Carácter: 30
++ -a---l        06/04/2026     11:04            111 README.md
++                              ~~~~~
+Token '11:04' inesperado en la expresión o la instrucción.
+En línea: 1 Carácter: 3
++ ----                 -------------         ------ ----
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+El operador -- solamente funciona en variables o en propiedades.
+En línea: 1 Carácter: 22
++ ----                 -------------         ------ ----
++                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+El operador -- solamente funciona en variables o en propiedades.
+En línea: 1 Carácter: 24
++ ----                 -------------         ------ ----
++                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+El operador -- solamente funciona en variables o en propiedades.
+No se notificaron todos los errores de análisis. Corrija los errores notificados e inténtelo de nuevo.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingExpressionAfterOperator
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> git commit -m "feat: integración del cliente MiniTwitter en el repositorio principal"
+Get-Process : No se encuentra ningún parámetro de posición que acepte el argumento '-'.
+En línea: 1 Carácter: 1
++ PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\Proye ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Get-Process], ParameterBindingException
+    + FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.GetProcessCommand
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> On branch main
+On : El término 'On' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si escribió
+correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 1
++ On branch main
++ ~~
+    + CategoryInfo          : ObjectNotFound: (On:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> Your branch is up to date with 'origin/main'.
+Your : El término 'Your' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si escribió
+correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 1
++ Your branch is up to date with 'origin/main'.
++ ~~~~
+    + CategoryInfo          : ObjectNotFound: (Your:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> Changes not staged for commit:
+Changes : El término 'Changes' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si escribió
+correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 1
++ Changes not staged for commit:
++ ~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Changes:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>   (use "git add <file>..." to update what will be committed)
+use : El término 'use' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si escribió
+correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 4
++   (use "git add <file>..." to update what will be committed)
++    ~~~
+    + CategoryInfo          : ObjectNotFound: (use:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>   (use "git restore <file>..." to discard changes in working directory)
+use : El término 'use' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si escribió
+correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 4
++   (use "git restore <file>..." to discard changes in working director ...
++    ~~~
+    + CategoryInfo          : ObjectNotFound: (use:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>         modified:   README.md
+modified: : El término 'modified:' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si
+escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 9
++         modified:   README.md
++         ~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (modified::String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>         modified:   css/styles.css
+modified: : El término 'modified:' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si
+escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 9
++         modified:   css/styles.css
++         ~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (modified::String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>         modified:   js/index.js
+modified: : El término 'modified:' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si
+escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 9
++         modified:   js/index.js
++         ~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (modified::String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> Untracked files:
+Untracked : El término 'Untracked' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si
+escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 1
++ Untracked files:
++ ~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Untracked:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>   (use "git add <file>..." to include in what will be committed)
+use : El término 'use' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si escribió
+correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 4
++   (use "git add <file>..." to include in what will be committed)
++    ~~~
+    + CategoryInfo          : ObjectNotFound: (use:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>         html/user.html
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>         js/user.js
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4> no changes added to commit (use "git add" and/or "git commit -a")
+
+use : El término 'use' no se reconoce como nombre de un cmdlet, función, archivo de script o programa ejecutable. Compruebe si escribió
+correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 29
++ no changes added to commit (use "git add" and/or "git commit -a")
++                             ~~~
+    + CategoryInfo          : ObjectNotFound: (use:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\MCT\ownCloud - JOSE VAZQUEZ AVILES@deposito.mct.es3\ProyectosVSC\2026g4>  
