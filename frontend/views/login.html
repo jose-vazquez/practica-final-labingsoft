@@ -1,0 +1,21 @@
+﻿<section class="card">
+    <h2>Acceso a la aplicación</h2>
+
+    <form ng-submit="login()">
+        <label for="user">Usuario</label>
+        <input id="user" type="text" ng-model="user" required>
+
+        <label for="passwd">Contraseña</label>
+        <input id="passwd" type="password" ng-model="passwd" required>
+
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p class="error" ng-show="error">{{ error }}</p>
+
+    <div class="info">
+        <p><strong>Credenciales de prueba:</strong></p>
+        <p>Usuario: joseva</p>
+        <p>Contraseña: joseva_password</p>
+    </div>
+</section>
