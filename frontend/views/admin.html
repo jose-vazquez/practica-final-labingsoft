@@ -1,0 +1,36 @@
+﻿<section class="card">
+    <h2>Panel de administración</h2>
+
+    <p>
+        Usuario autenticado:
+        <strong>{{ usuario.name }}</strong>
+    </p>
+
+    <p>
+        Rol:
+        <strong>{{ usuario.role }}</strong>
+    </p>
+
+    <hr>
+
+    <h3>Funcionalidades obligatorias</h3>
+
+    <div class="grid">
+        <article>
+            <h4>Usuarios</h4>
+            <p>Alta, listado, modificación y eliminación de usuarios.</p>
+        </article>
+
+        <article>
+            <h4>Categorías</h4>
+            <p>Alta, listado, modificación y eliminación de categorías.</p>
+        </article>
+
+        <article>
+            <h4>Vídeos</h4>
+            <p>Alta, listado, modificación y eliminación de vídeos asociados a categorías.</p>
+        </article>
+    </div>
+
+    <button type="button" ng-click="logout()">Cerrar sesión</button>
+</section>
