@@ -7,7 +7,7 @@ José Vázquez Avilés
 Trabajo realizado de forma individual.
 
 Repositorio GitHub:
-https://github.com/josevl/2026g4
+https://github.com/jose-vazquez/practica-final-labingsoft
 
 Credenciales de prueba:
 

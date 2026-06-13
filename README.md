@@ -6,7 +6,7 @@ José Vázquez Avilés
 
 ## Repositorio
 
-https://github.com/josevl/2026g4
+https://github.com/jose-vazquez/practica-final-labingsoft
 
 ## Descripción
 
