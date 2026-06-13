@@ -1,99 +1,85 @@
-# 2026g4
+﻿# Práctica Final - Laboratorio de Ingeniería del Software
 
-Grupo 4 - Prácticas de Laboratorio de Ingeniería del Software
+## Alumno
 
----
+José Vázquez Avilés
 
-# Usuario de prueba
+## Repositorio
 
-```text
-usuario: jose
-password: jose5
-```
+https://github.com/josevl/2026g4
 
----
+## Descripción
 
-# MiniTwitter
+Aplicación web cliente/servidor para la gestión de un catálogo multimedia.
 
-Aplicación web cliente desarrollada con HTML, CSS y JavaScript para consumir la API REST de MiniTwitter de la UPCT.
+La aplicación implementa la práctica final de la asignatura mediante:
 
----
+- Cliente AngularJS.
+- Servidor NodeJS.
+- API REST.
+- Base de datos SQLite.
+- Autenticación mediante token.
+- Panel de administración.
+- Gestión CRUD de usuarios.
+- Gestión CRUD de categorías.
+- Gestión CRUD de vídeos.
+- Vista de usuario con vídeos agrupados por categoría.
 
-# Funcionalidades implementadas
+## Credenciales de prueba
 
-- Autenticación de usuario mediante API REST.
-- Gestión de sesión usando JWT y `sessionStorage`.
-- Protección de rutas privadas.
-- Visualización del timeline principal.
-- Creación de nuevos tuits.
-- Publicación de tuits:
-  - solo texto
-  - imagen
-  - vídeo
-  - YouTube
-- Renderizado multimedia dentro del timeline.
-- Sistema de likes.
-- Sistema de retuits.
-- Navegación al perfil de usuario.
-- Visualización de tuits por usuario.
-- Botón de retorno al inicio.
-- Logout de usuario.
+### Administrador
 
----
+- Usuario: joseva
+- Contraseña: joseva_password
 
-# Tecnologías utilizadas
+### Usuario normal
 
-- HTML5
-- CSS3
+- Usuario: usuario
+- Contraseña: usuario_password
+
+## Tecnologías utilizadas
+
+### Cliente
+
+- HTML
+- CSS
 - JavaScript
+- AngularJS 1.x
+- angular-route
+
+### Servidor
+
+- NodeJS
+- Express
+- SQLite
 - API REST
-- JWT
+
+### Metodología y control de versiones
+
+- Scrum
 - Git
 - GitHub
+- Ramas por tarea
 
----
-
-# Estructura del proyecto
+## Estructura de la práctica final
 
 ```text
-html/
-  login.html
+backend/
+  server.js
+  schema.sql
+
+frontend/
   index.html
-  create.html
-  user.html
+  app.js
+  css/
+  views/
 
-css/
-  styles.css
+docs/
+  product-backlog.md
+  sprint-1.md
+  sprint-2.md
+  sprint-3.md
+  git-workflow.md
+  pruebas.md
 
-js/
-  api.js
-  login.js
-  index.js
-  create.js
-  user.js
-```
-
----
-
-# Endpoints utilizados
-
-- `POST /login`
-- `GET /tuits`
-- `POST /tuit`
-- `PUT /tuit/{id_tuit}/like`
-- `DELETE /tuit/{id_tuit}/like`
-- `PUT /tuit/{id_tuit}/retuit`
-- `DELETE /tuit/{id_tuit}/retuit`
-- `GET /usuario/{username}/tuits`
-
----
-
-# Uso de Git
-
-El desarrollo se ha realizado mediante commits incrementales utilizando:
-
-- `feat` 		→ nuevas funcionalidades
-- `fix` 		→ correcciones
-- `style` 		→ mejoras visuales
-- `refactor`	→ limpieza de código
-- `docs` 		→ documentación
+entrega_practica_final.txt
