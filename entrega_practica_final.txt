@@ -1,0 +1,24 @@
+﻿Práctica Final - Laboratorio de Ingeniería del Software
+Curso 2025/2026
+
+Alumno:
+José Vázquez Avilés
+
+Trabajo realizado de forma individual.
+
+Repositorio GitHub:
+https://github.com/josevl/2026g4
+
+Credenciales de prueba:
+
+Usuario administrador:
+- Usuario: joseva
+- Contraseña: joseva_password
+
+Usuario normal:
+- Usuario: usuario
+- Contraseña: usuario_password
+
+Observaciones:
+El desarrollo completo de la práctica final se encuentra en el repositorio GitHub indicado.
+El repositorio contiene el cliente AngularJS, el servidor NodeJS, la base de datos, la documentación Scrum/Git y las pruebas manuales.
