@@ -4,3 +4,5 @@ backend/database.db
 .DS_Store
 Thumbs.db
 .vscode/
+*.bak
+errores.txt
