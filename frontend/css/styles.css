@@ -98,3 +98,8 @@ button:hover {
         grid-template-columns: 1fr;
     }
 }
+
+.ok {
+    color: #047857;
+    font-weight: bold;
+}

@@ -20,11 +20,27 @@ angular.module('CatalogoApp', ['ngRoute'])
 .factory('apiService', function($http) {
     const api = {};
 
+    api.getAuthConfig = function(token) {
+        return {
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        };
+    };
+
     api.login = function(user, passwd) {
         return $http.post('/login', {
             user: user,
             passwd: passwd
         });
+    };
+
+    api.logout = function(token) {
+        return $http.put('/logout', {}, api.getAuthConfig(token));
+    };
+
+    api.ping = function(token) {
+        return $http.get('/api/ping', api.getAuthConfig(token));
     };
 
     return api;
@@ -51,7 +67,7 @@ angular.module('CatalogoApp', ['ngRoute'])
     };
 })
 
-.controller('AdminController', function($scope, $location) {
+.controller('AdminController', function($scope, $location, apiService) {
     const token = localStorage.getItem('token');
     const usuarioGuardado = localStorage.getItem('usuario');
 
@@ -61,10 +77,24 @@ angular.module('CatalogoApp', ['ngRoute'])
     }
 
     $scope.usuario = JSON.parse(usuarioGuardado);
+    $scope.apiMessage = 'Comprobando token de sesión...';
+
+    apiService.ping(token)
+        .then(function(response) {
+            $scope.apiMessage = response.data.message;
+        })
+        .catch(function() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            $location.path('/');
+        });
 
     $scope.logout = function() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('usuario');
-        $location.path('/');
+        apiService.logout(token)
+            .finally(function() {
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                $location.path('/');
+            });
     };
 });
