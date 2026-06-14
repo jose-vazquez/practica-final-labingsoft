@@ -78,3 +78,57 @@ La práctica se considera terminada cuando:
 - Las rutas protegidas validan el token.
 - El administrador puede gestionar usuarios, categorías y vídeos.
 - El usuario normal puede ver vídeos agrupados por categoría.
+
+## Prueba realizada en Sprint 2
+
+### P-03 - Token de sesión con base de datos SQLite
+
+Fecha de prueba: 14/06/2026
+
+Credenciales utilizadas:
+
+- Usuario: joseva
+- Contraseña: joseva_password
+
+Resultado obtenido:
+
+- El login se realiza contra la tabla `users` de SQLite.
+- El servidor genera un token aleatorio.
+- El token se almacena en la tabla `sessions`.
+- El cliente AngularJS guarda el token en `localStorage`.
+- La petición protegida `GET /api/ping` funciona enviando el token en la cabecera `Authorization`.
+- El panel de administración muestra el mensaje: `API REST funcionando con token válido`.
+
+Prueba adicional realizada desde PowerShell:
+
+- `POST /login` devuelve un token válido.
+- `GET /api/ping` con `Authorization: Bearer <token>` devuelve respuesta correcta.
+
+Estado: Superada.
+
+## Prueba realizada en Sprint 2
+
+### P-03 - Token de sesión con base de datos SQLite
+
+Fecha de prueba: 14/06/2026
+
+Credenciales utilizadas:
+
+- Usuario: joseva
+- Contraseña: joseva_password
+
+Resultado obtenido:
+
+- El login se realiza contra la tabla `users` de SQLite.
+- El servidor genera un token aleatorio.
+- El token se almacena en la tabla `sessions`.
+- El cliente AngularJS guarda el token en `localStorage`.
+- La petición protegida `GET /api/ping` funciona enviando el token en la cabecera `Authorization`.
+- El panel de administración muestra el mensaje: `API REST funcionando con token válido`.
+
+Prueba adicional realizada desde PowerShell:
+
+- `POST /login` devuelve un token válido.
+- `GET /api/ping` con `Authorization: Bearer <token>` devuelve respuesta correcta.
+
+Estado: Superada.
