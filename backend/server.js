@@ -4,7 +4,7 @@ const express = require('express');
 const path = require('path');
 const crypto = require('crypto');
 
-const { initDatabase, run, get } = require('./db');
+const { initDatabase, run, get, all } = require('./db');
 
 const app = express();
 const port = 8080;
@@ -147,6 +147,373 @@ app.get('/api/ping', requireToken, (req, res) => {
         message: 'API REST funcionando con token válido',
         user: req.user
     });
+});
+
+/*
+ * Middleware para comprobar que el usuario autenticado es administrador.
+ *
+ * Primero se ejecuta requireToken, que valida el token y carga req.user.
+ * Después este middleware comprueba que el rol sea admin.
+ */
+function requireAdmin(req, res, next) {
+    if (!req.user || req.user.role !== 'admin') {
+        return res.status(403).json({
+            error: 'Acceso permitido solo a administradores'
+        });
+    }
+
+    next();
+}
+
+/*
+ * GET /api/categories
+ *
+ * Devuelve todas las categorías existentes.
+ * Ruta protegida: necesita token válido.
+ */
+app.get('/api/categories', requireToken, async function(req, res) {
+    try {
+        const categories = await all(
+            `
+            SELECT id, name
+            FROM categories
+            ORDER BY name
+            `
+        );
+
+        res.json(categories);
+    } catch (error) {
+        console.error('Error al obtener categorías:', error);
+        res.status(500).json({
+            error: 'Error al obtener categorías'
+        });
+    }
+});
+
+/*
+ * POST /api/categories
+ *
+ * Crea una nueva categoría.
+ * Ruta protegida para administradores.
+ */
+app.post('/api/categories', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const name = req.body.name;
+
+        if (!name || name.trim() === '') {
+            return res.status(400).json({
+                error: 'El nombre de la categoría es obligatorio'
+            });
+        }
+
+        const result = await run(
+            `
+            INSERT INTO categories (name)
+            VALUES (?)
+            `,
+            [name.trim()]
+        );
+
+        const category = await get(
+            `
+            SELECT id, name
+            FROM categories
+            WHERE id = ?
+            `,
+            [result.id]
+        );
+
+        res.status(201).json(category);
+    } catch (error) {
+        console.error('Error al crear categoría:', error);
+        res.status(500).json({
+            error: 'Error al crear categoría'
+        });
+    }
+});
+
+/*
+ * PUT /api/categories/:id
+ *
+ * Modifica una categoría existente.
+ * Ruta protegida para administradores.
+ */
+app.put('/api/categories/:id', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const id = req.params.id;
+        const name = req.body.name;
+
+        if (!name || name.trim() === '') {
+            return res.status(400).json({
+                error: 'El nombre de la categoría es obligatorio'
+            });
+        }
+
+        const result = await run(
+            `
+            UPDATE categories
+            SET name = ?
+            WHERE id = ?
+            `,
+            [name.trim(), id]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({
+                error: 'Categoría no encontrada'
+            });
+        }
+
+        const category = await get(
+            `
+            SELECT id, name
+            FROM categories
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        res.json(category);
+    } catch (error) {
+        console.error('Error al modificar categoría:', error);
+        res.status(500).json({
+            error: 'Error al modificar categoría'
+        });
+    }
+});
+
+/*
+ * DELETE /api/categories/:id
+ *
+ * Elimina una categoría existente.
+ * Como la tabla videos tiene ON DELETE CASCADE,
+ * si una categoría tiene vídeos asociados, esos vídeos también se eliminan.
+ */
+app.delete('/api/categories/:id', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const id = req.params.id;
+
+        const result = await run(
+            `
+            DELETE FROM categories
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({
+                error: 'Categoría no encontrada'
+            });
+        }
+
+        res.json({
+            message: 'Categoría eliminada correctamente'
+        });
+    } catch (error) {
+        console.error('Error al eliminar categoría:', error);
+        res.status(500).json({
+            error: 'Error al eliminar categoría'
+        });
+    }
+});
+
+/*
+ * GET /api/videos
+ *
+ * Devuelve todos los vídeos junto con el nombre de su categoría.
+ * Ruta protegida: necesita token válido.
+ */
+app.get('/api/videos', requireToken, async function(req, res) {
+    try {
+        const videos = await all(
+            `
+            SELECT
+                videos.id,
+                videos.name,
+                videos.url,
+                videos.category_id,
+                categories.name AS category_name
+            FROM videos
+            INNER JOIN categories ON categories.id = videos.category_id
+            ORDER BY categories.name, videos.name
+            `
+        );
+
+        res.json(videos);
+    } catch (error) {
+        console.error('Error al obtener vídeos:', error);
+        res.status(500).json({
+            error: 'Error al obtener vídeos'
+        });
+    }
+});
+
+/*
+ * POST /api/videos
+ *
+ * Crea un nuevo vídeo asociado a una categoría.
+ * Ruta protegida para administradores.
+ */
+app.post('/api/videos', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const name = req.body.name;
+        const url = req.body.url;
+        const categoryId = req.body.category_id;
+
+        if (!name || name.trim() === '') {
+            return res.status(400).json({
+                error: 'El nombre del vídeo es obligatorio'
+            });
+        }
+
+        if (!url || url.trim() === '') {
+            return res.status(400).json({
+                error: 'La URL del vídeo es obligatoria'
+            });
+        }
+
+        if (!categoryId) {
+            return res.status(400).json({
+                error: 'La categoría del vídeo es obligatoria'
+            });
+        }
+
+        const result = await run(
+            `
+            INSERT INTO videos (name, url, category_id)
+            VALUES (?, ?, ?)
+            `,
+            [name.trim(), url.trim(), categoryId]
+        );
+
+        const video = await get(
+            `
+            SELECT
+                videos.id,
+                videos.name,
+                videos.url,
+                videos.category_id,
+                categories.name AS category_name
+            FROM videos
+            INNER JOIN categories ON categories.id = videos.category_id
+            WHERE videos.id = ?
+            `,
+            [result.id]
+        );
+
+        res.status(201).json(video);
+    } catch (error) {
+        console.error('Error al crear vídeo:', error);
+        res.status(500).json({
+            error: 'Error al crear vídeo'
+        });
+    }
+});
+
+/*
+ * PUT /api/videos/:id
+ *
+ * Modifica un vídeo existente.
+ * Ruta protegida para administradores.
+ */
+app.put('/api/videos/:id', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const id = req.params.id;
+        const name = req.body.name;
+        const url = req.body.url;
+        const categoryId = req.body.category_id;
+
+        if (!name || name.trim() === '') {
+            return res.status(400).json({
+                error: 'El nombre del vídeo es obligatorio'
+            });
+        }
+
+        if (!url || url.trim() === '') {
+            return res.status(400).json({
+                error: 'La URL del vídeo es obligatoria'
+            });
+        }
+
+        if (!categoryId) {
+            return res.status(400).json({
+                error: 'La categoría del vídeo es obligatoria'
+            });
+        }
+
+        const result = await run(
+            `
+            UPDATE videos
+            SET name = ?, url = ?, category_id = ?
+            WHERE id = ?
+            `,
+            [name.trim(), url.trim(), categoryId, id]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({
+                error: 'Vídeo no encontrado'
+            });
+        }
+
+        const video = await get(
+            `
+            SELECT
+                videos.id,
+                videos.name,
+                videos.url,
+                videos.category_id,
+                categories.name AS category_name
+            FROM videos
+            INNER JOIN categories ON categories.id = videos.category_id
+            WHERE videos.id = ?
+            `,
+            [id]
+        );
+
+        res.json(video);
+    } catch (error) {
+        console.error('Error al modificar vídeo:', error);
+        res.status(500).json({
+            error: 'Error al modificar vídeo'
+        });
+    }
+});
+
+/*
+ * DELETE /api/videos/:id
+ *
+ * Elimina un vídeo existente.
+ * Ruta protegida para administradores.
+ */
+app.delete('/api/videos/:id', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const id = req.params.id;
+
+        const result = await run(
+            `
+            DELETE FROM videos
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({
+                error: 'Vídeo no encontrado'
+            });
+        }
+
+        res.json({
+            message: 'Vídeo eliminado correctamente'
+        });
+    } catch (error) {
+        console.error('Error al eliminar vídeo:', error);
+        res.status(500).json({
+            error: 'Error al eliminar vídeo'
+        });
+    }
 });
 
 initDatabase()

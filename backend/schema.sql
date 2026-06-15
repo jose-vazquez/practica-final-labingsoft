@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS videos (
     name TEXT NOT NULL,
     url TEXT NOT NULL,
     category_id INTEGER NOT NULL,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+    UNIQUE(name, url, category_id)
 );
 
 INSERT OR IGNORE INTO users (username, password, name, role)
