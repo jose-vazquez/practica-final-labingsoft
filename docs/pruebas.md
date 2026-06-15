@@ -105,3 +105,105 @@ La práctica se considera terminada cuando:
 - Las rutas protegidas validan el token.
 - El administrador puede gestionar usuarios, categorías y vídeos.
 - El usuario normal puede ver vídeos agrupados por categoría.
+
+## Pruebas realizadas en Sprint 2 - CRUD de categorías y vídeos
+
+### P-08. Listar categorías
+
+**Objetivo:** comprobar que un administrador autenticado puede obtener las categorías existentes.
+
+**Comando probado:**
+
+Invoke-RestMethod -Method Get -Uri "http://localhost:8080/api/categories" -Headers @{ Authorization = "Bearer $token" }
+
+**Resultado obtenido:** la API devuelve las categorías existentes: Programación y Redes.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-09. Crear categoría
+
+**Objetivo:** comprobar que un administrador puede crear una nueva categoría.
+
+**Comando probado:**
+
+Invoke-RestMethod -Method Post -Uri "http://localhost:8080/api/categories" -ContentType "application/json" -Headers @{ Authorization = "Bearer $token" } -Body $cat
+
+**Resultado obtenido:** se crea correctamente la categoría Bases de datos.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-10. Modificar categoría
+
+**Objetivo:** comprobar que un administrador puede modificar una categoría existente.
+
+**Resultado obtenido:** la categoría Bases de datos se modifica correctamente a SQLite y bases de datos.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-11. Eliminar categoría
+
+**Objetivo:** comprobar que un administrador puede eliminar una categoría existente.
+
+**Resultado obtenido:** la API devuelve el mensaje Categoría eliminada correctamente.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-12. Listar vídeos
+
+**Objetivo:** comprobar que un usuario autenticado puede obtener la lista de vídeos junto con su categoría.
+
+**Comando probado:**
+
+Invoke-RestMethod -Method Get -Uri "http://localhost:8080/api/videos" -Headers @{ Authorization = "Bearer $token" }
+
+**Resultado obtenido:** la API devuelve los vídeos existentes con id, name, url, category_id y category_name.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-13. Crear vídeo
+
+**Objetivo:** comprobar que un administrador puede crear un vídeo asociado a una categoría.
+
+**Resultado obtenido:** se crea correctamente el vídeo Introducción a SQLite asociado a la categoría Bases de datos.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-14. Modificar vídeo
+
+**Objetivo:** comprobar que un administrador puede modificar un vídeo existente.
+
+**Resultado obtenido:** el vídeo Introducción a SQLite se modifica correctamente a SQLite con NodeJS.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-15. Eliminar vídeo
+
+**Objetivo:** comprobar que un administrador puede eliminar un vídeo existente.
+
+**Resultado obtenido:** la API devuelve el mensaje Vídeo eliminado correctamente.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-16. Evitar duplicados en vídeos de ejemplo
+
+**Objetivo:** comprobar que los vídeos iniciales no se duplican al regenerar la base de datos.
+
+**Resultado obtenido:** tras borrar backend/database.db y reiniciar el servidor, solo aparecen los dos vídeos iniciales esperados.
+
+**Estado:** SUPERADA.
