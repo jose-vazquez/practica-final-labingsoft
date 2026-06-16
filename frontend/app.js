@@ -138,6 +138,102 @@ angular.module('CatalogoApp', ['ngRoute'])
     };
 
     /*
+    * Obtiene todas las categorías existentes.
+    *
+    * Llama al endpoint:
+    * GET /api/categories
+    *
+    * Es una ruta protegida, por eso se envía el token.
+    */
+    api.getCategories = function(token) {
+        return $http.get('/api/categories', api.getAuthConfig(token));
+    };
+
+    /*
+    * Crea una nueva categoría.
+    *
+    * Llama al endpoint:
+    * POST /api/categories
+    *
+    * El objeto category debe tener esta forma:
+    * {
+    *     name: 'Nombre de la categoría'
+    * }
+    */
+    api.createCategory = function(token, category) {
+        return $http.post('/api/categories', category, api.getAuthConfig(token));
+    };
+
+    /*
+    * Modifica una categoría existente.
+    *
+    * Llama al endpoint:
+    * PUT /api/categories/:id
+    */
+    api.updateCategory = function(token, id, category) {
+        return $http.put('/api/categories/' + id, category, api.getAuthConfig(token));
+    };
+
+    /*
+    * Elimina una categoría existente.
+    *
+    * Llama al endpoint:
+    * DELETE /api/categories/:id
+    */
+    api.deleteCategory = function(token, id) {
+        return $http.delete('/api/categories/' + id, api.getAuthConfig(token));
+    };
+
+    /*
+    * Obtiene todos los vídeos existentes.
+    *
+    * Llama al endpoint:
+    * GET /api/videos
+    *
+    * El backend devuelve cada vídeo junto con su categoría.
+    */
+    api.getVideos = function(token) {
+        return $http.get('/api/videos', api.getAuthConfig(token));
+    };
+
+    /*
+    * Crea un nuevo vídeo.
+    *
+    * Llama al endpoint:
+    * POST /api/videos
+    *
+    * El objeto video debe tener esta forma:
+    * {
+    *     name: 'Nombre del vídeo',
+    *     url: 'https://...',
+    *     category_id: 1
+    * }
+    */
+    api.createVideo = function(token, video) {
+        return $http.post('/api/videos', video, api.getAuthConfig(token));
+    };
+
+    /*
+    * Modifica un vídeo existente.
+    *
+    * Llama al endpoint:
+    * PUT /api/videos/:id
+    */
+    api.updateVideo = function(token, id, video) {
+        return $http.put('/api/videos/' + id, video, api.getAuthConfig(token));
+    };
+
+    /*
+    * Elimina un vídeo existente.
+    *
+    * Llama al endpoint:
+    * DELETE /api/videos/:id
+    */
+    api.deleteVideo = function(token, id) {
+        return $http.delete('/api/videos/' + id, api.getAuthConfig(token));
+    };
+
+    /*
      * Se devuelve el objeto api para que pueda ser usado
      * por los controladores.
      */
@@ -311,7 +407,253 @@ angular.module('CatalogoApp', ['ngRoute'])
             $location.path('/');
         });
 
+       /*
+     * Listas de datos que se mostrarán en el panel.
+     *
+     * categories contendrá las categorías recibidas desde SQLite.
+     * videos contendrá los vídeos recibidos desde SQLite.
+     */
+    $scope.categories = [];
+    $scope.videos = [];
+
     /*
+     * Objetos enlazados a los formularios de alta.
+     *
+     * newCategory se usará para crear una categoría nueva.
+     * newVideo se usará para crear un vídeo nuevo.
+     */
+    $scope.newCategory = {};
+    $scope.newVideo = {};
+
+    /*
+     * Objetos usados cuando el usuario quiere editar un registro.
+     *
+     * editingCategory guarda una copia de la categoría que se está modificando.
+     * editingVideo guarda una copia del vídeo que se está modificando.
+     */
+    $scope.editingCategory = null;
+    $scope.editingVideo = null;
+
+    /*
+     * Mensajes de estado para mostrar errores o confirmaciones
+     * sin tener que mirar siempre la consola del navegador.
+     */
+    $scope.categoryMessage = '';
+    $scope.videoMessage = '';
+
+    /*
+     * Carga todas las categorías desde la API REST.
+     *
+     * Llama al servicio:
+     * GET /api/categories
+     */
+    $scope.loadCategories = function() {
+        apiService.getCategories(token)
+            .then(function(response) {
+                $scope.categories = response.data;
+            })
+            .catch(function() {
+                $scope.categoryMessage = 'Error al cargar las categorías';
+            });
+    };
+
+    /*
+     * Carga todos los vídeos desde la API REST.
+     *
+     * Llama al servicio:
+     * GET /api/videos
+     */
+    $scope.loadVideos = function() {
+        apiService.getVideos(token)
+            .then(function(response) {
+                $scope.videos = response.data;
+            })
+            .catch(function() {
+                $scope.videoMessage = 'Error al cargar los vídeos';
+            });
+    };
+
+    /*
+     * Crea una nueva categoría.
+     *
+     * La vista escribirá el nombre en:
+     * newCategory.name
+     */
+    $scope.createCategory = function() {
+        $scope.categoryMessage = '';
+
+        apiService.createCategory(token, $scope.newCategory)
+            .then(function() {
+                $scope.newCategory = {};
+                $scope.categoryMessage = 'Categoría creada correctamente';
+                $scope.loadCategories();
+            })
+            .catch(function() {
+                $scope.categoryMessage = 'Error al crear la categoría';
+            });
+    };
+
+    /*
+     * Activa el modo edición para una categoría.
+     *
+     * angular.copy() crea una copia del objeto.
+     * Así no modificamos directamente la tabla mientras el usuario escribe.
+     */
+    $scope.editCategory = function(category) {
+        $scope.editingCategory = angular.copy(category);
+        $scope.categoryMessage = '';
+    };
+
+    /*
+     * Cancela la edición de categoría.
+     */
+    $scope.cancelCategoryEdit = function() {
+        $scope.editingCategory = null;
+    };
+
+    /*
+     * Guarda los cambios de una categoría editada.
+     */
+    $scope.updateCategory = function() {
+        $scope.categoryMessage = '';
+
+        apiService.updateCategory(
+            token,
+            $scope.editingCategory.id,
+            $scope.editingCategory
+        )
+            .then(function() {
+                $scope.editingCategory = null;
+                $scope.categoryMessage = 'Categoría modificada correctamente';
+                $scope.loadCategories();
+                $scope.loadVideos();
+            })
+            .catch(function() {
+                $scope.categoryMessage = 'Error al modificar la categoría';
+            });
+    };
+
+    /*
+     * Elimina una categoría.
+     *
+     * Si la categoría tiene vídeos asociados, el backend los elimina también
+     * por la relación ON DELETE CASCADE definida en SQLite.
+     */
+    $scope.deleteCategory = function(category) {
+        const confirmed = confirm(
+            '¿Seguro que quieres eliminar la categoría "' + category.name + '"?'
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        $scope.categoryMessage = '';
+
+        apiService.deleteCategory(token, category.id)
+            .then(function() {
+                $scope.categoryMessage = 'Categoría eliminada correctamente';
+                $scope.loadCategories();
+                $scope.loadVideos();
+            })
+            .catch(function() {
+                $scope.categoryMessage = 'Error al eliminar la categoría';
+            });
+    };
+
+    /*
+     * Crea un nuevo vídeo asociado a una categoría.
+     *
+     * La vista escribirá:
+     * newVideo.name
+     * newVideo.url
+     * newVideo.category_id
+     */
+    $scope.createVideo = function() {
+        $scope.videoMessage = '';
+
+        apiService.createVideo(token, $scope.newVideo)
+            .then(function() {
+                $scope.newVideo = {};
+                $scope.videoMessage = 'Vídeo creado correctamente';
+                $scope.loadVideos();
+            })
+            .catch(function() {
+                $scope.videoMessage = 'Error al crear el vídeo';
+            });
+    };
+
+    /*
+     * Activa el modo edición para un vídeo.
+     */
+    $scope.editVideo = function(video) {
+        $scope.editingVideo = angular.copy(video);
+        $scope.videoMessage = '';
+    };
+
+    /*
+     * Cancela la edición de vídeo.
+     */
+    $scope.cancelVideoEdit = function() {
+        $scope.editingVideo = null;
+    };
+
+    /*
+     * Guarda los cambios de un vídeo editado.
+     */
+    $scope.updateVideo = function() {
+        $scope.videoMessage = '';
+
+        apiService.updateVideo(
+            token,
+            $scope.editingVideo.id,
+            $scope.editingVideo
+        )
+            .then(function() {
+                $scope.editingVideo = null;
+                $scope.videoMessage = 'Vídeo modificado correctamente';
+                $scope.loadVideos();
+            })
+            .catch(function() {
+                $scope.videoMessage = 'Error al modificar el vídeo';
+            });
+    };
+
+    /*
+     * Elimina un vídeo.
+     */
+    $scope.deleteVideo = function(video) {
+        const confirmed = confirm(
+            '¿Seguro que quieres eliminar el vídeo "' + video.name + '"?'
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        $scope.videoMessage = '';
+
+        apiService.deleteVideo(token, video.id)
+            .then(function() {
+                $scope.videoMessage = 'Vídeo eliminado correctamente';
+                $scope.loadVideos();
+            })
+            .catch(function() {
+                $scope.videoMessage = 'Error al eliminar el vídeo';
+            });
+    };
+
+    /*
+     * Carga inicial de datos al entrar al panel.
+     *
+     * Cuando AdminController se activa, se cargan automáticamente
+     * categorías y vídeos.
+     */
+    $scope.loadCategories();
+    $scope.loadVideos();
+   
+   
+        /*
      * Función de cierre de sesión.
      *
      * Se ejecuta desde la vista con:
