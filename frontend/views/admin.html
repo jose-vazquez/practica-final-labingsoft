@@ -1,4 +1,4 @@
-﻿<section class="card">
+﻿<section class="panel">
     <h2>Panel de administración</h2>
 
     <p>
@@ -11,30 +11,194 @@
         <strong>{{ usuario.role }}</strong>
     </p>
 
-    <p class="ok">
-        {{ apiMessage }}
-    </p>
+    <p class="ok">{{ apiMessage }}</p>
 
     <hr>
 
-    <h3>Funcionalidades obligatorias</h3>
+    <h3>Gestión de categorías</h3>
 
-    <div class="grid">
-        <article>
-            <h4>Usuarios</h4>
-            <p>Alta, listado, modificación y eliminación de usuarios.</p>
-        </article>
+    <form ng-submit="createCategory()" class="form-block">
+        <label for="categoryName">Nueva categoría</label>
 
-        <article>
-            <h4>Categorías</h4>
-            <p>Alta, listado, modificación y eliminación de categorías.</p>
-        </article>
+        <input
+            id="categoryName"
+            type="text"
+            ng-model="newCategory.name"
+            placeholder="Nombre de la categoría"
+            required
+        >
 
-        <article>
-            <h4>Vídeos</h4>
-            <p>Alta, listado, modificación y eliminación de vídeos asociados a categorías.</p>
-        </article>
+        <button type="submit">Crear categoría</button>
+    </form>
+
+    <p class="ok" ng-if="categoryMessage">{{ categoryMessage }}</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr ng-repeat="category in categories | orderBy:'id'">
+                <td>{{ category.id }}</td>
+                <td>{{ category.name }}</td>
+                <td>
+                    <button type="button" ng-click="editCategory(category)">
+                        Editar
+                    </button>
+
+                    <button type="button" ng-click="deleteCategory(category)">
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div ng-if="editingCategory" class="edit-box">
+        <h4>Editar categoría</h4>
+
+        <form ng-submit="updateCategory()">
+            <label for="editCategoryName">Nombre</label>
+
+            <input
+                id="editCategoryName"
+                type="text"
+                ng-model="editingCategory.name"
+                required
+            >
+
+            <button type="submit">Guardar cambios</button>
+
+            <button type="button" ng-click="cancelCategoryEdit()">
+                Cancelar
+            </button>
+        </form>
     </div>
 
-    <button type="button" ng-click="logout()">Cerrar sesión</button>
+    <hr>
+
+    <h3>Gestión de vídeos</h3>
+
+    <form ng-submit="createVideo()" class="form-block">
+        <label for="videoName">Nombre del vídeo</label>
+
+        <input
+            id="videoName"
+            type="text"
+            ng-model="newVideo.name"
+            placeholder="Nombre del vídeo"
+            required
+        >
+
+        <label for="videoUrl">URL</label>
+
+        <input
+            id="videoUrl"
+            type="url"
+            ng-model="newVideo.url"
+            placeholder="https://..."
+            required
+        >
+
+        <label for="videoCategory">Categoría</label>
+
+        <select
+            id="videoCategory"
+            ng-model="newVideo.category_id"
+            ng-options="category.id as category.name for category in categories | orderBy:'id'"
+            required
+        >
+            <option value="">Selecciona una categoría</option>
+        </select>
+
+        <button type="submit">Crear vídeo</button>
+    </form>
+
+    <p class="ok" ng-if="videoMessage">{{ videoMessage }}</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>URL</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr ng-repeat="video in videos | orderBy:'id'">
+                <td>{{ video.id }}</td>
+                <td>{{ video.name }}</td>
+                <td>
+                    <a ng-href="{{ video.url }}" target="_blank">
+                        {{ video.url }}
+                    </a>
+                </td>
+                <td>{{ video.category_name }}</td>
+                <td>
+                    <button type="button" ng-click="editVideo(video)">
+                        Editar
+                    </button>
+
+                    <button type="button" ng-click="deleteVideo(video)">
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div ng-if="editingVideo" class="edit-box">
+        <h4>Editar vídeo</h4>
+
+        <form ng-submit="updateVideo()">
+            <label for="editVideoName">Nombre</label>
+
+            <input
+                id="editVideoName"
+                type="text"
+                ng-model="editingVideo.name"
+                required
+            >
+
+            <label for="editVideoUrl">URL</label>
+
+            <input
+                id="editVideoUrl"
+                type="url"
+                ng-model="editingVideo.url"
+                required
+            >
+
+            <label for="editVideoCategory">Categoría</label>
+
+            <select
+                id="editVideoCategory"
+                ng-model="editingVideo.category_id"
+                ng-options="category.id as category.name for category in categories | orderBy:'id'"
+                required
+            >
+                <option value="">Selecciona una categoría</option>
+            </select>
+
+            <button type="submit">Guardar cambios</button>
+
+            <button type="button" ng-click="cancelVideoEdit()">
+                Cancelar
+            </button>
+        </form>
+    </div>
+
+    <hr>
+
+    <button type="button" ng-click="logout()">
+        Cerrar sesión
+    </button>
 </section>
