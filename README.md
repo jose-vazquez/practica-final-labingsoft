@@ -12,18 +12,24 @@ https://github.com/jose-vazquez/practica-final-labingsoft
 
 Aplicación web cliente/servidor para la gestión de un catálogo multimedia.
 
-La aplicación implementa la práctica final de la asignatura mediante:
 
-- Cliente AngularJS.
-- Servidor NodeJS.
+- Cliente AngularJS 1.x.
+- Servidor NodeJS con Express.
 - API REST.
 - Base de datos SQLite.
-- Autenticación mediante token.
+- Autenticación mediante usuario y contraseña.
+- Generación de token de sesión.
+- Almacenamiento del token en `localStorage`.
+- Rutas protegidas mediante cabecera `Authorization`.
 - Panel de administración.
-- Gestión CRUD de usuarios.
 - Gestión CRUD de categorías.
-- Gestión CRUD de vídeos.
-- Vista de usuario con vídeos agrupados por categoría.
+- Gestión CRUD de vídeos asociados a categorías.
+- Ordenación visual por ID en las tablas del panel.
+
+Funcionalidades pendientes de completar:
+
+- Gestión CRUD de usuarios desde el panel de administración.
+- Vista de usuario normal con vídeos agrupados por categoría.
 
 ## Credenciales de prueba
 

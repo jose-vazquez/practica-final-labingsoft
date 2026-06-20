@@ -43,3 +43,27 @@ Al finalizar este sprint, el administrador debe poder iniciar sesión y gestiona
 - El administrador puede crear, listar, modificar y eliminar categorías.
 - El administrador puede crear, listar, modificar y eliminar vídeos.
 - Cada vídeo queda asociado a una categoría.
+
+## Estado actual del sprint
+
+Durante este sprint se han completado las siguientes partes:
+
+- Servidor NodeJS con Express.
+- Base de datos SQLite.
+- Tabla `users`.
+- Tabla `sessions`.
+- Tabla `categories`.
+- Tabla `videos`.
+- Login contra base de datos.
+- Generación de token de sesión.
+- Validación de rutas protegidas mediante token.
+- CRUD REST de categorías.
+- CRUD REST de vídeos.
+- Panel AngularJS conectado al CRUD de categorías.
+- Panel AngularJS conectado al CRUD de vídeos.
+- Ordenación visual por ID en las tablas del panel.
+
+Quedan pendientes para completar totalmente la funcionalidad obligatoria de administración:
+
+- CRUD REST de usuarios.
+- Pantalla AngularJS para listar, crear, modificar y eliminar usuarios.
