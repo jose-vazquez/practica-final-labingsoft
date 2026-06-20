@@ -13,9 +13,146 @@
 
     <p class="ok">{{ apiMessage }}</p>
 
-    <hr>
+<hr>
 
-    <h3>Gestión de categorías</h3>
+    <h3>Gestión de usuarios</h3>
+
+    <form ng-submit="createUser()" class="form-block">
+        <label for="username">Usuario</label>
+
+        <input
+            id="username"
+            type="text"
+            ng-model="newUser.username"
+            placeholder="Nombre de usuario"
+            required
+        >
+
+        <label for="userPassword">Contraseña</label>
+
+        <input
+            id="userPassword"
+            type="password"
+            ng-model="newUser.password"
+            placeholder="Contraseña"
+            required
+        >
+
+        <label for="userName">Nombre completo</label>
+
+        <input
+            id="userName"
+            type="text"
+            ng-model="newUser.name"
+            placeholder="Nombre completo"
+            required
+        >
+
+        <label for="userRole">Rol</label>
+
+        <select
+            id="userRole"
+            ng-model="newUser.role"
+            required
+        >
+            <option value="">Selecciona un rol</option>
+            <option value="admin">Administrador</option>
+            <option value="user">Usuario normal</option>
+        </select>
+
+        <button type="submit">Crear usuario</button>
+    </form>
+
+    <p class="ok" ng-if="userMessage">{{ userMessage }}</p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Nombre</th>
+                <th>Rol</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr ng-repeat="user in users | orderBy:'id'">
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                    <button type="button" ng-click="editUser(user)">
+                        Editar
+                    </button>
+
+                    <button
+                        type="button"
+                        ng-click="deleteUser(user)"
+                        ng-disabled="user.id === usuario.id"
+                    >
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div ng-if="editingUser" class="edit-box">
+        <h4>Editar usuario</h4>
+
+        <form ng-submit="updateUser()">
+            <label for="editUsername">Usuario</label>
+
+            <input
+                id="editUsername"
+                type="text"
+                ng-model="editingUser.username"
+                required
+            >
+
+            <label for="editUserPassword">Nueva contraseña</label>
+
+            <input
+                id="editUserPassword"
+                type="password"
+                ng-model="editingUser.password"
+                placeholder="Introduce la contraseña"
+                required
+            >
+
+            <label for="editUserName">Nombre completo</label>
+
+            <input
+                id="editUserName"
+                type="text"
+                ng-model="editingUser.name"
+                required
+            >
+
+            <label for="editUserRole">Rol</label>
+
+            <select
+                id="editUserRole"
+                ng-model="editingUser.role"
+                required
+            >
+                <option value="admin">Administrador</option>
+                <option value="user">Usuario normal</option>
+            </select>
+
+            <button type="submit">Guardar cambios</button>
+
+            <button type="button" ng-click="cancelUserEdit()">
+                Cancelar
+            </button>
+        </form>
+    </div>
+
+   <hr>
+
+<h3>Gestión de categorías</h3>
 
     <form ng-submit="createCategory()" class="form-block">
         <label for="categoryName">Nueva categoría</label>
@@ -80,7 +217,7 @@
         </form>
     </div>
 
-    <hr>
+   <hr>
 
     <h3>Gestión de vídeos</h3>
 

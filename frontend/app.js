@@ -185,6 +185,46 @@ angular.module('CatalogoApp', ['ngRoute'])
     };
 
     /*
+     * Obtiene todos los usuarios existentes.
+     *
+     * Llama al endpoint:
+     * GET /api/users
+     */
+    api.getUsers = function(token) {
+        return $http.get('/api/users', api.getAuthConfig(token));
+    };
+
+    /*
+     * Crea un nuevo usuario.
+     *
+     * Llama al endpoint:
+     * POST /api/users
+     */
+    api.createUser = function(token, user) {
+        return $http.post('/api/users', user, api.getAuthConfig(token));
+    };
+
+    /*
+     * Modifica un usuario existente.
+     *
+     * Llama al endpoint:
+     * PUT /api/users/:id
+     */
+    api.updateUser = function(token, id, user) {
+        return $http.put('/api/users/' + id, user, api.getAuthConfig(token));
+    };
+
+    /*
+     * Elimina un usuario existente.
+     *
+     * Llama al endpoint:
+     * DELETE /api/users/:id
+     */
+    api.deleteUser = function(token, id) {
+        return $http.delete('/api/users/' + id, api.getAuthConfig(token));
+    };
+
+    /*
     * Obtiene todos los vídeos existentes.
     *
     * Llama al endpoint:
@@ -413,6 +453,7 @@ angular.module('CatalogoApp', ['ngRoute'])
      * categories contendrá las categorías recibidas desde SQLite.
      * videos contendrá los vídeos recibidos desde SQLite.
      */
+    $scope.users = [];
     $scope.categories = [];
     $scope.videos = [];
 
@@ -422,6 +463,7 @@ angular.module('CatalogoApp', ['ngRoute'])
      * newCategory se usará para crear una categoría nueva.
      * newVideo se usará para crear un vídeo nuevo.
      */
+    $scope.newUser = {};
     $scope.newCategory = {};
     $scope.newVideo = {};
 
@@ -431,6 +473,8 @@ angular.module('CatalogoApp', ['ngRoute'])
      * editingCategory guarda una copia de la categoría que se está modificando.
      * editingVideo guarda una copia del vídeo que se está modificando.
      */
+
+    $scope.editingUser = null;
     $scope.editingCategory = null;
     $scope.editingVideo = null;
 
@@ -438,8 +482,111 @@ angular.module('CatalogoApp', ['ngRoute'])
      * Mensajes de estado para mostrar errores o confirmaciones
      * sin tener que mirar siempre la consola del navegador.
      */
+    $scope.userMessage = '';
     $scope.categoryMessage = '';
     $scope.videoMessage = '';
+
+    /*
+     * Carga todos los usuarios desde la API REST.
+     *
+     * Llama al servicio:
+     * GET /api/users
+     */
+    $scope.loadUsers = function() {
+        apiService.getUsers(token)
+            .then(function(response) {
+                $scope.users = response.data;
+            })
+            .catch(function() {
+                $scope.userMessage = 'Error al cargar los usuarios';
+            });
+    };
+
+    /*
+     * Crea un nuevo usuario.
+     *
+     * La vista escribirá:
+     * newUser.username
+     * newUser.password
+     * newUser.name
+     * newUser.role
+     */
+    $scope.createUser = function() {
+        $scope.userMessage = '';
+
+        apiService.createUser(token, $scope.newUser)
+            .then(function() {
+                $scope.newUser = {};
+                $scope.userMessage = 'Usuario creado correctamente';
+                $scope.loadUsers();
+            })
+            .catch(function() {
+                $scope.userMessage = 'Error al crear el usuario';
+            });
+    };
+
+    /*
+     * Activa el modo edición para un usuario.
+     */
+    $scope.editUser = function(user) {
+        $scope.editingUser = angular.copy(user);
+        $scope.editingUser.password = '';
+        $scope.userMessage = '';
+    };
+
+    /*
+     * Cancela la edición de usuario.
+     */
+    $scope.cancelUserEdit = function() {
+        $scope.editingUser = null;
+    };
+
+    /*
+     * Guarda los cambios de un usuario editado.
+     */
+    $scope.updateUser = function() {
+        $scope.userMessage = '';
+
+        apiService.updateUser(
+            token,
+            $scope.editingUser.id,
+            $scope.editingUser
+        )
+            .then(function() {
+                $scope.editingUser = null;
+                $scope.userMessage = 'Usuario modificado correctamente';
+                $scope.loadUsers();
+            })
+            .catch(function() {
+                $scope.userMessage = 'Error al modificar el usuario';
+            });
+    };
+
+    /*
+     * Elimina un usuario.
+     *
+     * El backend no permite eliminar el usuario autenticado.
+     */
+    $scope.deleteUser = function(user) {
+        const confirmed = confirm(
+            '¿Seguro que quieres eliminar el usuario "' + user.username + '"?'
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        $scope.userMessage = '';
+
+        apiService.deleteUser(token, user.id)
+            .then(function() {
+                $scope.userMessage = 'Usuario eliminado correctamente';
+                $scope.loadUsers();
+            })
+            .catch(function() {
+                $scope.userMessage = 'Error al eliminar el usuario';
+            });
+    };
 
     /*
      * Carga todas las categorías desde la API REST.
@@ -649,6 +796,7 @@ angular.module('CatalogoApp', ['ngRoute'])
      * Cuando AdminController se activa, se cargan automáticamente
      * categorías y vídeos.
      */
+    $scope.loadUsers();
     $scope.loadCategories();
     $scope.loadVideos();
    

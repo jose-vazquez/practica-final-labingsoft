@@ -166,6 +166,217 @@ function requireAdmin(req, res, next) {
 }
 
 /*
+ * GET /api/users
+ *
+ * Devuelve todos los usuarios existentes.
+ * Ruta protegida para administradores.
+ */
+app.get('/api/users', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const users = await all(
+            `
+            SELECT id, username, name, role
+            FROM users
+            ORDER BY id
+            `
+        );
+
+        res.json(users);
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error);
+        res.status(500).json({
+            error: 'Error al obtener usuarios'
+        });
+    }
+});
+
+/*
+ * POST /api/users
+ *
+ * Crea un nuevo usuario.
+ * Ruta protegida para administradores.
+ */
+app.post('/api/users', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const username = req.body.username;
+        const password = req.body.password;
+        const name = req.body.name;
+        const role = req.body.role;
+
+        if (!username || username.trim() === '') {
+            return res.status(400).json({
+                error: 'El nombre de usuario es obligatorio'
+            });
+        }
+
+        if (!password || password.trim() === '') {
+            return res.status(400).json({
+                error: 'La contraseña es obligatoria'
+            });
+        }
+
+        if (!name || name.trim() === '') {
+            return res.status(400).json({
+                error: 'El nombre completo es obligatorio'
+            });
+        }
+
+        if (!role || !['admin', 'user'].includes(role)) {
+            return res.status(400).json({
+                error: 'El rol debe ser admin o user'
+            });
+        }
+
+        const result = await run(
+            `
+            INSERT INTO users (username, password, name, role)
+            VALUES (?, ?, ?, ?)
+            `,
+            [
+                username.trim(),
+                password.trim(),
+                name.trim(),
+                role
+            ]
+        );
+
+        const user = await get(
+            `
+            SELECT id, username, name, role
+            FROM users
+            WHERE id = ?
+            `,
+            [result.id]
+        );
+
+        res.status(201).json(user);
+    } catch (error) {
+        console.error('Error al crear usuario:', error);
+        res.status(500).json({
+            error: 'Error al crear usuario'
+        });
+    }
+});
+
+/*
+ * PUT /api/users/:id
+ *
+ * Modifica un usuario existente.
+ * Ruta protegida para administradores.
+ */
+app.put('/api/users/:id', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const id = req.params.id;
+        const username = req.body.username;
+        const password = req.body.password;
+        const name = req.body.name;
+        const role = req.body.role;
+
+        if (!username || username.trim() === '') {
+            return res.status(400).json({
+                error: 'El nombre de usuario es obligatorio'
+            });
+        }
+
+        if (!password || password.trim() === '') {
+            return res.status(400).json({
+                error: 'La contraseña es obligatoria'
+            });
+        }
+
+        if (!name || name.trim() === '') {
+            return res.status(400).json({
+                error: 'El nombre completo es obligatorio'
+            });
+        }
+
+        if (!role || !['admin', 'user'].includes(role)) {
+            return res.status(400).json({
+                error: 'El rol debe ser admin o user'
+            });
+        }
+
+        const result = await run(
+            `
+            UPDATE users
+            SET username = ?, password = ?, name = ?, role = ?
+            WHERE id = ?
+            `,
+            [
+                username.trim(),
+                password.trim(),
+                name.trim(),
+                role,
+                id
+            ]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({
+                error: 'Usuario no encontrado'
+            });
+        }
+
+        const user = await get(
+            `
+            SELECT id, username, name, role
+            FROM users
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        res.json(user);
+    } catch (error) {
+        console.error('Error al modificar usuario:', error);
+        res.status(500).json({
+            error: 'Error al modificar usuario'
+        });
+    }
+});
+
+/*
+ * DELETE /api/users/:id
+ *
+ * Elimina un usuario existente.
+ * Ruta protegida para administradores.
+ */
+app.delete('/api/users/:id', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const id = req.params.id;
+
+        if (Number(id) === req.user.id) {
+            return res.status(400).json({
+                error: 'No puedes eliminar el usuario con el que estás autenticado'
+            });
+        }
+
+        const result = await run(
+            `
+            DELETE FROM users
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({
+                error: 'Usuario no encontrado'
+            });
+        }
+
+        res.json({
+            message: 'Usuario eliminado correctamente'
+        });
+    } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        res.status(500).json({
+            error: 'Error al eliminar usuario'
+        });
+    }
+});
+
+/*
  * GET /api/categories
  *
  * Devuelve todas las categorías existentes.
@@ -177,7 +388,7 @@ app.get('/api/categories', requireToken, async function(req, res) {
             `
             SELECT id, name
             FROM categories
-            ORDER BY name
+            ORDER BY id
             `
         );
 
@@ -336,7 +547,7 @@ app.get('/api/videos', requireToken, async function(req, res) {
                 categories.name AS category_name
             FROM videos
             INNER JOIN categories ON categories.id = videos.category_id
-            ORDER BY categories.name, videos.name
+            ORDER BY videos.id
             `
         );
 
