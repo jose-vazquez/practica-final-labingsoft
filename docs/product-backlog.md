@@ -15,8 +15,8 @@ Desarrollar una aplicación web cliente/servidor para gestionar usuarios, catego
 | HU-05 | Como administrador quiero crear, modificar y eliminar categorías | Alta | 5 | Sprint 2 | Hecha |
 | HU-06 | Como administrador quiero listar vídeos | Alta | 2 | Sprint 2 | Hecha |
 | HU-07 | Como administrador quiero crear, modificar y eliminar vídeos | Alta | 5 | Sprint 2 | Hecha |
-| HU-08 | Como administrador quiero listar usuarios | Alta | 2 | Sprint 2 | Pendiente |
-| HU-09 | Como administrador quiero crear, modificar y eliminar usuarios | Alta | 5 | Sprint 2 | Pendiente |
+| HU-08 | Como administrador quiero listar usuarios | Alta | 2 | Sprint 2 | Hecha  |
+| HU-09 | Como administrador quiero crear, modificar y eliminar usuarios | Alta | 5 | Sprint 2 | Hecha  |
 | HU-10 | Como usuario normal quiero ver los vídeos agrupados por categoría | Media | 3 | Sprint 3 | Pendiente |
 | HU-11 | Como usuario normal quiero ver el nombre y la URL de cada vídeo | Media | 2 | Sprint 3 | Pendiente |
 
@@ -26,4 +26,6 @@ Primero se desarrolla la funcionalidad obligatoria de administrador, ya que repr
 
 ## Estado actual del Product Backlog
 
-En este punto del desarrollo ya se ha completado el login, la generación de token, la protección de rutas, el CRUD de categorías y el CRUD de vídeos. Quedan pendientes el CRUD de usuarios y la vista de usuario normal con vídeos agrupados por categoría.
+En este punto del desarrollo ya se ha completado el login, la generación de token, la protección de rutas, el CRUD de usuarios, el CRUD de categorías y el CRUD de vídeos.
+
+La funcionalidad obligatoria de administración queda completada. Queda pendiente únicamente la funcionalidad opcional de usuario normal con vídeos agrupados por categoría.

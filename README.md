@@ -22,13 +22,16 @@ Aplicación web cliente/servidor para la gestión de un catálogo multimedia.
 - Almacenamiento del token en `localStorage`.
 - Rutas protegidas mediante cabecera `Authorization`.
 - Panel de administración.
+- Gestión CRUD de usuarios desde el panel de administración.
 - Gestión CRUD de categorías.
 - Gestión CRUD de vídeos asociados a categorías.
 - Ordenación visual por ID en las tablas del panel.
+- Carga local de AngularJS y `angular-route`.
+- Interfaz visual mejorada mediante CSS propio.
+- Favicon e iconos propios de la aplicación.
 
-Funcionalidades pendientes de completar:
+Funcionalidad opcional pendiente:
 
-- Gestión CRUD de usuarios desde el panel de administración.
 - Vista de usuario normal con vídeos agrupados por categoría.
 
 ## Credenciales de prueba
@@ -78,7 +81,10 @@ frontend/
   index.html
   app.js
   css/
+  icons/
+  lib/
   views/
+  favicon.ico
 
 docs/
   product-backlog.md

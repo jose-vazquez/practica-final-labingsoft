@@ -61,3 +61,35 @@ Ejemplo para crear una rama de login:
 Cada rama representa una tarea técnica asociada a una historia de usuario del Product Backlog.
 
 Al terminar una tarea, se genera un incremento funcional que puede revisarse y fusionarse en la rama principal.
+
+## Rama utilizada para el CRUD de usuarios
+
+Para implementar la gestión de usuarios se utilizó la rama:
+
+```bash
+sprint2/crud-usuarios
+```
+
+En esta rama se realizaron commits separados para mantener un historial claro:
+
+```bash
+feat: implementar crud de usuarios en backend
+chore: servir angularjs y favicon desde local
+feat: conectar crud de usuarios en angularjs
+style: mejorar interfaz del panel de administracion
+chore: servir angularjs y favicon desde local
+```
+
+La rama se fusionó en `main` mediante un merge no fast-forward:
+
+```bash
+git merge --no-ff sprint2/crud-usuarios -m "merge: integrar crud de usuarios"
+```
+
+El commit de integración en `main` fue:
+
+```bash
+1f32cb3 merge: integrar crud de usuarios
+```
+
+Este flujo permite justificar el uso de Git como herramienta de control de versiones, separando cada incremento funcional en ramas y commits descriptivos.
