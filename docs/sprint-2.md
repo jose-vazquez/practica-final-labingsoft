@@ -62,8 +62,38 @@ Durante este sprint se han completado las siguientes partes:
 - Panel AngularJS conectado al CRUD de categorías.
 - Panel AngularJS conectado al CRUD de vídeos.
 - Ordenación visual por ID en las tablas del panel.
-
-Quedan pendientes para completar totalmente la funcionalidad obligatoria de administración:
-
 - CRUD REST de usuarios.
-- Pantalla AngularJS para listar, crear, modificar y eliminar usuarios.
+- Panel AngularJS conectado al CRUD de usuarios.
+- Protección de operaciones administrativas mediante rol `admin`.
+- Prevención del borrado del usuario autenticado.
+- Carga local de AngularJS y `angular-route`.
+- Mejora visual del panel de administración mediante CSS propio.
+
+Con estas tareas, la funcionalidad obligatoria de administración queda completada: el administrador puede gestionar usuarios, categorías y vídeos desde una API REST protegida y desde el panel AngularJS.
+
+## CRUD de usuarios implementado
+
+Durante este sprint se completó la gestión de usuarios tanto en backend como en frontend.
+
+### Endpoints REST implementados
+
+- `GET /api/users`
+- `POST /api/users`
+- `PUT /api/users/:id`
+- `DELETE /api/users/:id`
+
+Estos endpoints están protegidos mediante token y requieren que el usuario autenticado tenga rol `admin`.
+
+### Funcionalidad desde AngularJS
+
+En el panel de administración se añadió una sección de usuarios que permite:
+
+- Listar usuarios.
+- Crear usuarios.
+- Editar usuarios.
+- Eliminar usuarios.
+- Evitar la eliminación del usuario autenticado.
+
+### Relación con la base de datos
+
+Los usuarios se almacenan en la tabla `users` de SQLite. Las sesiones se almacenan en la tabla `sessions`, asociando cada token al usuario autenticado.

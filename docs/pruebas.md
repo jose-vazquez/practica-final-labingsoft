@@ -11,10 +11,10 @@ Documentar las pruebas realizadas sobre la práctica final para comprobar que la
 | P-01 | Login administrador | joseva | Acceso al panel de administración | Superada |
 | P-02 | Login usuario normal | usuario | Acceso a la vista de vídeos | Pendiente |
 | P-03 | Token de sesión | joseva | El token se guarda en el navegador | Superada |
-| P-04 | Listar usuarios | joseva | Se muestran los usuarios existentes | Pendiente |
-| P-05 | Crear usuario | joseva | Se crea un nuevo usuario | Pendiente |
-| P-06 | Modificar usuario | joseva | Se modifican los datos del usuario | Pendiente |
-| P-07 | Eliminar usuario | joseva | Se elimina el usuario seleccionado | Pendiente |
+| P-04 | Listar usuarios | joseva | Se muestran los usuarios existentes | Superada |
+| P-05 | Crear usuario | joseva | Se crea un nuevo usuario | Superada |
+| P-06 | Modificar usuario | joseva | Se modifican los datos del usuario | Superada |
+| P-07 | Eliminar usuario | joseva | Se elimina el usuario seleccionado | Superada |
 | P-08 | Listar categorías desde API REST | joseva | Se muestran las categorías existentes | Superada |
 | P-09 | Crear categoría desde API REST | joseva | Se crea una nueva categoría | Superada |
 | P-10 | Modificar categoría desde API REST | joseva | Se modifica la categoría seleccionada | Superada |
@@ -34,6 +34,8 @@ Documentar las pruebas realizadas sobre la práctica final para comprobar que la
 | P-24 | Eliminar vídeo desde AngularJS | joseva | Se elimina un vídeo desde el panel | Superada |
 | P-25 | Ordenación por ID | joseva | Categorías y vídeos aparecen ordenados por ID | Superada |
 | P-26 | Vídeos por categoría en vista de usuario normal | usuario | Los vídeos aparecen agrupados por categoría | Pendiente |
+| P-27 | Evitar borrado del usuario autenticado | joseva | El sistema no permite eliminar el usuario actualmente autenticado | Superada |
+| P-28 | CRUD de usuarios desde AngularJS | joseva | Crear, editar y eliminar usuarios desde el panel | Superada |
 
 
 
@@ -247,5 +249,78 @@ Invoke-RestMethod -Method Get -Uri "http://localhost:8080/api/videos" -Headers @
 **Objetivo:** comprobar que categorías y vídeos se muestran ordenados por identificador.
 
 **Resultado obtenido:** las tablas del panel AngularJS muestran los registros ordenados por el campo `id`.
+
+**Estado:** SUPERADA.
+
+---
+
+## Pruebas realizadas en Sprint 2 - CRUD de usuarios
+
+### P-04. Listar usuarios
+
+**Objetivo:** comprobar que un administrador autenticado puede obtener la lista de usuarios existentes.
+
+**Resultado obtenido:** la API devuelve los usuarios con los campos `id`, `username`, `name` y `role`, sin devolver la contraseña.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-05. Crear usuario
+
+**Objetivo:** comprobar que un administrador puede crear un usuario nuevo.
+
+**Resultado obtenido:** se crea correctamente un usuario de prueba en la base de datos SQLite.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-06. Modificar usuario
+
+**Objetivo:** comprobar que un administrador puede modificar los datos de un usuario existente.
+
+**Resultado obtenido:** se modifican correctamente el nombre de usuario, la contraseña, el nombre completo y el rol.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-07. Eliminar usuario
+
+**Objetivo:** comprobar que un administrador puede eliminar un usuario existente.
+
+**Resultado obtenido:** el usuario de prueba se elimina correctamente y desaparece del listado.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-27. Evitar borrado del usuario autenticado
+
+**Objetivo:** comprobar que el sistema no permite eliminar el usuario con el que se ha iniciado sesión.
+
+**Resultado obtenido:** el backend devuelve un error y mantiene activo al usuario autenticado.
+
+**Estado:** SUPERADA.
+
+---
+
+### P-28. CRUD de usuarios desde AngularJS
+
+**Objetivo:** comprobar que el panel de administración permite gestionar usuarios desde la interfaz web.
+
+**Pasos realizados:**
+
+1. Iniciar sesión como administrador.
+2. Acceder al panel de administración.
+3. Crear un usuario de prueba.
+4. Editar el usuario creado.
+5. Guardar los cambios.
+6. Eliminar el usuario.
+7. Comprobar que el usuario desaparece de la tabla.
+8. Comprobar que el botón de eliminar del usuario autenticado está deshabilitado.
+
+**Resultado obtenido:** el CRUD de usuarios funciona correctamente desde el panel AngularJS.
 
 **Estado:** SUPERADA.
