@@ -26,12 +26,30 @@ async function requireToken(req, res, next) {
             token = req.headers['x-session-token'];
         }
 
-        if (!token) {
-            return res.status(401).json({
-                error: 'Token no enviado'
-            });
+        /*
+         * Compatibilidad literal con el enunciado de la práctica:
+         * el PDF utiliza session_id como identificador de sesión.
+         *
+         * Se acepta session_id en el cuerpo, en la URL o como parámetro query,
+         * manteniendo también Authorization: Bearer para no romper el cliente actual.
+         */
+        if (!token && req.body && req.body.session_id) {
+            token = req.body.session_id;
         }
 
+        if (!token && req.params && req.params.session_id) {
+            token = req.params.session_id;
+        }
+
+        if (!token && req.query && req.query.session_id) {
+            token = req.query.session_id;
+        }
+
+        if (!token) {
+            return res.status(401).json({
+                error: 'session_id no enviado'
+            });
+        }
         const session = await get(
             `SELECT 
                 s.token,
@@ -104,6 +122,7 @@ app.post('/login', async (req, res) => {
         );
 
         return res.json({
+            session_id: token,
             token: token,
             user: {
                 id: usuario.id,
@@ -164,6 +183,253 @@ function requireAdmin(req, res, next) {
 
     next();
 }
+
+
+/*
+ * ============================================================
+ * Rutas compatibles con el enunciado de la práctica
+ * ============================================================
+ *
+ * El enunciado de la práctica utiliza session_id como identificador
+ * de sesión en las rutas y en el cuerpo de las peticiones.
+ *
+ * Estas rutas conviven con las rutas modernas /api/users para no romper
+ * el panel AngularJS ya implementado.
+ *
+ * Rutas añadidas:
+ *
+ * GET    /users/:session_id
+ * GET    /user/:session_id/:user_id
+ * POST   /user
+ * PUT    /user
+ * DELETE /user/:session_id/:id
+ */
+
+/*
+ * GET /users/:session_id
+ *
+ * Lista todos los usuarios.
+ */
+app.get('/users/:session_id', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const users = await all(
+            `
+            SELECT id, username, name, role
+            FROM users
+            ORDER BY id
+            `
+        );
+
+        res.json(users);
+    } catch (error) {
+        console.error('Error al listar usuarios:', error);
+        res.status(500).json({
+            error: 'Error al listar usuarios'
+        });
+    }
+});
+
+/*
+ * GET /user/:session_id/:user_id
+ *
+ * Obtiene los datos de un usuario concreto.
+ */
+app.get('/user/:session_id/:user_id', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const user = await get(
+            `
+            SELECT id, username, name, role
+            FROM users
+            WHERE id = ?
+            `,
+            [req.params.user_id]
+        );
+
+        if (!user) {
+            return res.status(404).json({
+                error: 'Usuario no encontrado'
+            });
+        }
+
+        res.json(user);
+    } catch (error) {
+        console.error('Error al obtener usuario:', error);
+        res.status(500).json({
+            error: 'Error al obtener usuario'
+        });
+    }
+});
+
+/*
+ * POST /user
+ *
+ * Crea un usuario nuevo usando session_id en el cuerpo.
+ *
+ * Formato compatible con el enunciado:
+ *
+ * {
+ *   "session_id": "...",
+ *   "name": "pepito",
+ *   "email": "pepe.lopez@mycompany.com",
+ *   "passwd": "patata"
+ * }
+ *
+ * En esta práctica, username y name se almacenan en SQLite.
+ * Si no se envía username, se usa el campo name como username.
+ */
+app.post('/user', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const username = req.body.username || req.body.user || req.body.name;
+        const password = req.body.password || req.body.passwd;
+        const fullName = req.body.fullname || req.body.displayName || req.body.name;
+        const role = req.body.role || 'user';
+
+        if (!username || !password || !fullName) {
+            return res.status(400).json({
+                error: 'username/user/name, passwd/password y name son obligatorios'
+            });
+        }
+
+        if (role !== 'admin' && role !== 'user') {
+            return res.status(400).json({
+                error: 'El rol debe ser admin o user'
+            });
+        }
+
+        const result = await run(
+            `
+            INSERT INTO users (username, password, name, role)
+            VALUES (?, ?, ?, ?)
+            `,
+            [
+                username.trim(),
+                password.trim(),
+                fullName.trim(),
+                role
+            ]
+        );
+
+        const newUser = await get(
+            `
+            SELECT id, username, name, role
+            FROM users
+            WHERE id = ?
+            `,
+            [result.id]
+        );
+
+        res.status(201).json(newUser);
+    } catch (error) {
+        console.error('Error al crear usuario:', error);
+        res.status(500).json({
+            error: 'Error al crear usuario'
+        });
+    }
+});
+
+/*
+ * PUT /user
+ *
+ * Modifica un usuario usando session_id en el cuerpo.
+ */
+app.put('/user', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const id = req.body.id || req.body.user_id;
+        const username = req.body.username || req.body.user || req.body.name;
+        const password = req.body.password || req.body.passwd;
+        const fullName = req.body.fullname || req.body.displayName || req.body.name;
+        const role = req.body.role || 'user';
+
+        if (!id || !username || !password || !fullName) {
+            return res.status(400).json({
+                error: 'id, username/user/name, passwd/password y name son obligatorios'
+            });
+        }
+
+        if (role !== 'admin' && role !== 'user') {
+            return res.status(400).json({
+                error: 'El rol debe ser admin o user'
+            });
+        }
+
+        const result = await run(
+            `
+            UPDATE users
+            SET username = ?, password = ?, name = ?, role = ?
+            WHERE id = ?
+            `,
+            [
+                username.trim(),
+                password.trim(),
+                fullName.trim(),
+                role,
+                id
+            ]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({
+                error: 'Usuario no encontrado'
+            });
+        }
+
+        const updatedUser = await get(
+            `
+            SELECT id, username, name, role
+            FROM users
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        res.json(updatedUser);
+    } catch (error) {
+        console.error('Error al modificar usuario:', error);
+        res.status(500).json({
+            error: 'Error al modificar usuario'
+        });
+    }
+});
+
+/*
+ * DELETE /user/:session_id/:id
+ *
+ * Elimina un usuario usando session_id en la URL.
+ */
+app.delete('/user/:session_id/:id', requireToken, requireAdmin, async function(req, res) {
+    try {
+        const id = Number(req.params.id);
+
+        if (id === req.user.id) {
+            return res.status(400).json({
+                error: 'No puedes eliminar el usuario con el que estás autenticado'
+            });
+        }
+
+        const result = await run(
+            `
+            DELETE FROM users
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({
+                error: 'Usuario no encontrado'
+            });
+        }
+
+        res.json({
+            message: 'Usuario eliminado correctamente'
+        });
+    } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        res.status(500).json({
+            error: 'Error al eliminar usuario'
+        });
+    }
+});
 
 /*
  * GET /api/users
