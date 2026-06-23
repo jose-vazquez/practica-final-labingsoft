@@ -33,6 +33,13 @@ Implementar el servidor NodeJS, la base de datos SQLite y los servicios REST obl
 
 Al finalizar este sprint, el administrador debe poder iniciar sesión y gestionar usuarios, categorías y vídeos mediante peticiones REST protegidas con token.
 
+### Adaptación contractual de `session_id`
+
+Durante la revisión de la práctica se adaptó la API REST para cumplir literalmente el uso de `session_id` descrito en el enunciado. El login devuelve `session_id`, las rutas `/users/:session_id` y `/user/:session_id/:user_id` aceptan dicho identificador, y las operaciones de creación, modificación y eliminación de usuarios también pueden realizarse usando `session_id`.
+
+Además, se verificó que `PUT /logout` elimina la sesión en el servidor. La prueba final confirma que, después del logout, reutilizar el mismo `session_id` devuelve `401`, demostrando que la sesión ya no es válida.
+
+
 ## Definición de terminado
 
 - El login consulta usuario y contraseña en la base de datos.
