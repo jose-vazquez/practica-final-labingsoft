@@ -36,7 +36,7 @@ Documentar las pruebas realizadas sobre la práctica final para comprobar que la
 | P-26 | Vídeos por categoría en vista de usuario normal | usuario | Los vídeos aparecen agrupados por categoría | Pendiente |
 | P-27 | Evitar borrado del usuario autenticado | joseva | El sistema no permite eliminar el usuario actualmente autenticado | Superada |
 | P-28 | CRUD de usuarios desde AngularJS | joseva | Crear, editar y eliminar usuarios desde el panel | Superada |
-
+| P-29 | Compatibilidad contractual con session_id | joseva | Login devuelve session_id, las rutas protegidas lo aceptan y logout invalida la sesión en servidor | Superada |
 
 
 ## Prueba realizada en Sprint 1
@@ -96,6 +96,234 @@ Prueba adicional realizada desde PowerShell:
 - `GET /api/ping` con `Authorization: Bearer <token>` devuelve respuesta correcta.
 
 Estado: Superada.
+
+### P-29 - Compatibilidad contractual con `session_id`
+
+Fecha de prueba: 23/06/2026
+
+Credenciales utilizadas:
+
+* Usuario: joseva
+* Contraseña: joseva_password
+
+#### Objetivo
+
+Comprobar que la API REST cumple literalmente el formato indicado en el enunciado de la práctica, donde el identificador de sesión se denomina `session_id`.
+
+Esta prueba verifica que:
+
+* `POST /login` devuelve un `session_id`.
+* El `session_id` permite acceder a rutas protegidas.
+* La ruta `GET /users/:session_id` lista los usuarios.
+* La ruta `GET /user/:session_id/:user_id` obtiene un usuario concreto.
+* La ruta `POST /user` permite crear usuarios usando `session_id` en el cuerpo de la petición.
+* La ruta `PUT /user` permite modificar usuarios usando `session_id` en el cuerpo de la petición.
+* La ruta `DELETE /user/:session_id/:id` permite eliminar usuarios usando `session_id` en la URL.
+* `PUT /logout` elimina la sesión en el servidor.
+* Después de hacer logout, reutilizar el mismo `session_id` devuelve error `401`.
+
+#### Prueba de login
+
+Comando utilizado:
+
+```powershell
+$body = @{ user = "joseva"; passwd = "joseva_password" } | ConvertTo-Json
+
+$login = Invoke-RestMethod `
+  -Method Post `
+  -Uri "http://localhost:8080/login" `
+  -ContentType "application/json" `
+  -Body $body
+
+$session_id = $login.session_id
+
+$login
+```
+
+Resultado obtenido:
+
+```text
+session_id                                                       token                                                            user
+----------                                                       -----                                                            ----
+74d0a24ae339f2fc9dbae86b920108b421b1ade8ec67720fd68e4d3eef6d7c68 74d0a24ae339f2fc9dbae86b920108b421b1ade8ec67720fd68e4d3eef6d7c68 @{id=1; username=...}
+```
+
+Conclusión: el login devuelve correctamente un `session_id`.
+
+#### Prueba de listado de usuarios
+
+Comando utilizado:
+
+```powershell
+Invoke-RestMethod `
+  -Method Get `
+  -Uri "http://localhost:8080/users/$session_id"
+```
+
+Resultado obtenido:
+
+```text
+id username   name                   role
+-- --------   ----                   ----
+ 1 joseva     José Vázquez Avilés    admin
+ 2 usuario    Usuario de prueba      user
+ 8 prueba_web Usuario de prueba Web  admin
+```
+
+Conclusión: la ruta `GET /users/:session_id` funciona correctamente usando el identificador de sesión en la URL.
+
+#### Prueba de consulta de usuario concreto
+
+Comando utilizado:
+
+```powershell
+Invoke-RestMethod `
+  -Method Get `
+  -Uri "http://localhost:8080/user/$session_id/1"
+```
+
+Resultado obtenido:
+
+```text
+id username name                role
+-- -------- ----                ----
+ 1 joseva   José Vázquez Avilés admin
+```
+
+Conclusión: la ruta `GET /user/:session_id/:user_id` devuelve correctamente los datos de un usuario concreto.
+
+#### Prueba de creación de usuario
+
+Comando utilizado:
+
+```powershell
+$n = Get-Random
+
+$newUser = @{
+    session_id = $session_id
+    name       = "usuario_literal_$n"
+    email      = "usuario_literal_$n@prueba.local"
+    passwd     = "literal_password"
+    role       = "user"
+} | ConvertTo-Json
+
+$created = Invoke-RestMethod `
+  -Method Post `
+  -Uri "http://localhost:8080/user" `
+  -ContentType "application/json" `
+  -Body $newUser
+
+$created
+```
+
+Resultado obtenido:
+
+```text
+id username                  name                      role
+-- --------                  ----                      ----
+11 usuario_literal_191707732 usuario_literal_191707732 user
+```
+
+Conclusión: la ruta `POST /user` permite crear usuarios usando `session_id` en el cuerpo de la petición.
+
+#### Prueba de modificación de usuario
+
+Comando utilizado:
+
+```powershell
+$updatedUser = @{
+    session_id = $session_id
+    id         = $created.id
+    name       = "usuario_literal_modificado_$n"
+    passwd     = "literal_password_modificada"
+    role       = "user"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+  -Method Put `
+  -Uri "http://localhost:8080/user" `
+  -ContentType "application/json" `
+  -Body $updatedUser
+```
+
+Resultado obtenido:
+
+```text
+id username                             name                                 role
+-- --------                             ----                                 ----
+11 usuario_literal_modificado_191707732 usuario_literal_modificado_191707732 user
+```
+
+Conclusión: la ruta `PUT /user` permite modificar usuarios usando `session_id` en el cuerpo de la petición.
+
+#### Prueba de eliminación de usuario
+
+Comando utilizado:
+
+```powershell
+Invoke-RestMethod `
+  -Method Delete `
+  -Uri "http://localhost:8080/user/$session_id/$($created.id)"
+```
+
+Resultado obtenido:
+
+```text
+message
+-------
+Usuario eliminado correctamente
+```
+
+Conclusión: la ruta `DELETE /user/:session_id/:id` elimina correctamente el usuario indicado.
+
+#### Prueba de logout
+
+Comando utilizado:
+
+```powershell
+$logoutBody = @{ session_id = $session_id } | ConvertTo-Json
+
+Invoke-RestMethod `
+  -Method Put `
+  -Uri "http://localhost:8080/logout" `
+  -ContentType "application/json" `
+  -Body $logoutBody
+```
+
+Resultado obtenido:
+
+```text
+message
+-------
+Sesión cerrada correctamente
+```
+
+Conclusión: el servidor acepta el `session_id` para cerrar sesión.
+
+#### Comprobación de sesión invalidada
+
+Comando utilizado:
+
+```powershell
+try {
+    Invoke-RestMethod `
+      -Method Get `
+      -Uri "http://localhost:8080/users/$session_id"
+} catch {
+    $_.Exception.Response.StatusCode.value__
+}
+```
+
+Resultado obtenido:
+
+```text
+401
+```
+
+Conclusión: después del logout, el mismo `session_id` ya no es válido. Esto demuestra que la sesión se elimina en el servidor y no solo en el cliente.
+
+Estado: Superada.
+
 
 ## Credenciales de prueba
 
