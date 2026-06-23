@@ -70,6 +70,11 @@ Funcionalidad opcional pendiente:
 - GitHub
 - Ramas por tarea
 
+### Compatibilidad con `session_id`
+
+La API REST mantiene compatibilidad con el formato indicado en el enunciado de la práctica. El endpoint `POST /login` devuelve un `session_id`, las rutas protegidas pueden recibirlo en la URL, en el cuerpo de la petición o en la cabecera `Authorization`, y el endpoint `PUT /logout` elimina la sesión del servidor. Se ha comprobado que, tras cerrar sesión, reutilizar el mismo `session_id` devuelve error `401`.
+
+
 ## Estructura de la práctica final
 
 ```text
@@ -95,3 +100,6 @@ docs/
   pruebas.md
 
 entrega_practica_final.txt
+
+
+
