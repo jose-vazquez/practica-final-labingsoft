@@ -4,15 +4,51 @@ const express = require('express');
 const path = require('path');
 const crypto = require('crypto');
 
+/*
+ * Importo las funciones de acceso a SQLite desde db.js.
+ *
+ * Con run ejecuto INSERT, UPDATE y DELETE.
+ * Con get obtengo un único registro.
+ * Con all obtengo listados completos.
+ * Con initDatabase preparo la base de datos al arrancar el servidor.
+ */
 const { initDatabase, run, get, all } = require('./db');
 
 const app = express();
 const port = 8080;
 
+/*
+ * Activo el parser JSON para que Express pueda leer los cuerpos de las
+ * peticiones POST y PUT enviadas desde AngularJS o desde PowerShell.
+ */
 app.use(express.json());
 
+/*
+ * Sirvo la aplicación AngularJS como contenido estático.
+ *
+ * De esta forma el mismo servidor NodeJS entrega index.html, app.js,
+ * las vistas HTML, CSS, iconos y librerías locales de AngularJS.
+ */
 app.use(express.static(path.join(__dirname, '../frontend')));
 
+/*
+ * Valido la sesión antes de permitir el acceso a cualquier ruta protegida.
+ *
+ * En esta práctica uso un token de sesión generado en el login y almacenado
+ * en la tabla sessions. Además, mantengo compatibilidad con el nombre
+ * session_id porque el enunciado de la práctica lo utiliza expresamente
+ * para identificar la sesión abierta.
+ *
+ * Acepto la sesión de varias formas:
+ * - cabecera Authorization: Bearer <token>, usada por AngularJS;
+ * - cabecera x-session-token, como alternativa técnica;
+ * - body.session_id, params.session_id o query.session_id, para cumplir
+ *   literalmente las rutas indicadas en el enunciado.
+ *
+ * Si la sesión existe en la base de datos, cargo los datos del usuario
+ * autenticado en req.user para que las rutas posteriores puedan saber
+ * quién realiza la petición y qué rol tiene.
+ */
 async function requireToken(req, res, next) {
     try {
         const authorization = req.headers.authorization || '';
@@ -85,11 +121,29 @@ async function requireToken(req, res, next) {
     }
 }
 
+/*
+ * Realizo el inicio de sesión de la aplicación.
+ *
+ * Recibo usuario y contraseña desde el cliente AngularJS, compruebo las
+ * credenciales contra la tabla users de SQLite y, si son correctas, genero
+ * un token aleatorio con crypto.
+ *
+ * Antes de crear la nueva sesión elimino cualquier sesión anterior del mismo
+ * usuario. Así evito dejar varias sesiones abiertas para la misma cuenta.
+ *
+ * Devuelvo tanto token como session_id. El campo token lo usa el cliente
+ * AngularJS mediante Authorization Bearer, y session_id mantiene la
+ * compatibilidad literal con el formato del enunciado.
+ */
 app.post('/login', async (req, res) => {
     try {
         const user = req.body.user;
         const passwd = req.body.passwd;
 
+        /*
+         * Compruebo que el usuario haya enviado credenciales.
+         * Si falta algún dato, rechazo la petición antes de consultar SQLite.
+         */
         if (!user || !passwd) {
             return res.status(400).json({
                 error: 'Usuario y contraseña son obligatorios'
@@ -109,6 +163,10 @@ app.post('/login', async (req, res) => {
             });
         }
 
+        /*
+         * Genero un token aleatorio de 32 bytes.
+         * Lo convierto a hexadecimal para almacenarlo y enviarlo como texto.
+         */
         const token = crypto.randomBytes(32).toString('hex');
 
         await run(
@@ -138,6 +196,17 @@ app.post('/login', async (req, res) => {
     }
 });
 
+/*
+ * Cierro la sesión del usuario autenticado.
+ *
+ * Primero paso por requireToken para asegurarme de que la sesión existe.
+ * Después elimino el token de la tabla sessions. Esta eliminación es
+ * importante porque demuestra que el logout no solo borra datos del navegador,
+ * sino que invalida realmente la sesión en el servidor.
+ *
+ * Tras esta operación, si se intenta reutilizar el mismo session_id, el
+ * backend debe responder 401.
+ */
 app.put('/logout', requireToken, async (req, res) => {
     try {
         await run(
@@ -155,12 +224,24 @@ app.put('/logout', requireToken, async (req, res) => {
     }
 });
 
+/*
+ * Devuelvo los datos del usuario autenticado.
+ *
+ * Uso esta ruta como apoyo para que el cliente pueda comprobar qué usuario
+ * está asociado al token actual.
+ */
 app.get('/api/me', requireToken, (req, res) => {
     res.json({
         user: req.user
     });
 });
 
+/*
+ * Uso esta ruta como prueba rápida de API protegida.
+ *
+ * Si el token es válido, la ruta responde correctamente. Si no lo es,
+ * requireToken corta la petición antes de llegar aquí.
+ */
 app.get('/api/ping', requireToken, (req, res) => {
     res.json({
         message: 'API REST funcionando con token válido',
