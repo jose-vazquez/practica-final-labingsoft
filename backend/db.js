@@ -106,7 +106,7 @@ function all(sql, params = []) {
     });
 }
 
-async /*
+/*
  * Inicializo la base de datos.
  *
  * En esta función leo schema.sql y ejecuto las sentencias necesarias para
