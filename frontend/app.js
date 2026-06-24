@@ -57,6 +57,17 @@ angular.module('CatalogoApp', ['ngRoute'])
         })
 
         /*
+         * Ruta de usuario normal.
+         *
+         * Cumple la parte opcional del enunciado:
+         * el usuario autenticado puede ver vídeos agrupados por categoría.
+         */
+        .when('/user', {
+            templateUrl: 'views/user.html',
+            controller: 'UserController'
+        })
+
+        /*
          * Ruta por defecto.
          *
          * Si el usuario escribe una ruta no válida,
@@ -120,7 +131,7 @@ angular.module('CatalogoApp', ['ngRoute'])
      * Authorization.
      */
     api.logout = function(token) {
-        return $http.put('/logout', {}, api.getAuthConfig(token));
+        return $http.put('/logout', { session_id: token }, api.getAuthConfig(token));
     };
 
     /*
@@ -341,7 +352,9 @@ angular.module('CatalogoApp', ['ngRoute'])
                  * localStorage permite mantener el token aunque se recargue
                  * la página.
                  */
-                localStorage.setItem('token', response.data.token);
+                const sessionId = response.data.session_id || response.data.token;
+                localStorage.setItem('token', sessionId);
+                localStorage.setItem('session_id', sessionId);
 
                 /*
                  * Se guardan también los datos del usuario.
@@ -356,7 +369,11 @@ angular.module('CatalogoApp', ['ngRoute'])
                  *
                  * AngularJS cambia la vista sin recargar toda la página.
                  */
-                $location.path('/admin');
+                if (response.data.user.role === 'admin') {
+                    $location.path('/admin');
+                } else {
+                    $location.path('/user');
+                }
             })
 
             /*
@@ -825,4 +842,103 @@ angular.module('CatalogoApp', ['ngRoute'])
                 $location.path('/');
             });
     };
+});
+/*
+ * Controlador de la vista de usuario normal.
+ *
+ * Se asocia a la vista:
+ * frontend/views/user.html
+ *
+ * Cumple la parte opcional del enunciado:
+ * - el usuario normal inicia sesión;
+ * - se usa el token/session_id guardado en localStorage;
+ * - se consultan categorías y vídeos mediante la API REST;
+ * - los vídeos se muestran agrupados por categoría;
+ * - de cada vídeo se muestra el nombre y la URL.
+ */
+angular.module('CatalogoApp')
+.controller('UserController', function($scope, $location, apiService) {
+    const token = localStorage.getItem('token');
+    const usuarioGuardado = localStorage.getItem('usuario');
+
+    $scope.usuario = null;
+    $scope.categories = [];
+    $scope.videos = [];
+    $scope.categoriesWithVideos = [];
+    $scope.error = '';
+
+    if (!token || !usuarioGuardado) {
+        $location.path('/');
+        return;
+    }
+
+    try {
+        $scope.usuario = JSON.parse(usuarioGuardado);
+    } catch (error) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('session_id');
+        localStorage.removeItem('usuario');
+        $location.path('/');
+        return;
+    }
+
+    /*
+     * Agrupa los vídeos por categoría.
+     *
+     * El backend devuelve:
+     * - categorías con id y name;
+     * - vídeos con category_id.
+     *
+     * Esta función construye una estructura cómoda para la vista:
+     * cada categoría contiene su array de vídeos.
+     */
+    function buildCategoriesWithVideos() {
+        $scope.categoriesWithVideos = $scope.categories.map(function(category) {
+            const videosOfCategory = $scope.videos.filter(function(video) {
+                return Number(video.category_id) === Number(category.id);
+            });
+
+            return {
+                id: category.id,
+                name: category.name,
+                description: category.description,
+                videos: videosOfCategory
+            };
+        });
+    }
+
+    /*
+     * Carga categorías y vídeos usando el token/session_id.
+     */
+    $scope.loadUserContent = function() {
+        apiService.getCategories(token)
+            .then(function(categoriesResponse) {
+                $scope.categories = categoriesResponse.data;
+                return apiService.getVideos(token);
+            })
+            .then(function(videosResponse) {
+                $scope.videos = videosResponse.data;
+                buildCategoriesWithVideos();
+            })
+            .catch(function() {
+                $scope.error = 'Error al cargar las categorías y vídeos';
+            });
+    };
+
+    /*
+     * Cierra sesión.
+     *
+     * El backend elimina la sesión y después el cliente borra localStorage.
+     */
+    $scope.logout = function() {
+        apiService.logout(token)
+            .finally(function() {
+                localStorage.removeItem('token');
+                localStorage.removeItem('session_id');
+                localStorage.removeItem('usuario');
+                $location.path('/');
+            });
+    };
+
+    $scope.loadUserContent();
 });

@@ -1,0 +1,69 @@
+﻿<section class="user-page">
+    <div class="user-hero">
+        <div>
+            <p class="eyebrow">Vista de usuario</p>
+            <h1>Catálogo de vídeos</h1>
+            <p class="hero-text">
+                Vídeos organizados por categoría para el usuario autenticado.
+            </p>
+        </div>
+
+        <div class="user-card">
+            <p class="user-label">Sesión iniciada</p>
+            <h2>{{ usuario.name }}</h2>
+            <span class="role-badge">{{ usuario.role }}</span>
+
+            <button class="logout-button" ng-click="logout()">
+                Cerrar sesión
+            </button>
+        </div>
+    </div>
+
+    <div class="message error" ng-if="error">
+        {{ error }}
+    </div>
+
+    <div class="empty-state" ng-if="categoriesWithVideos.length === 0 && !error">
+        <h2>No hay categorías disponibles</h2>
+        <p>Cuando existan categorías y vídeos, aparecerán en esta pantalla.</p>
+    </div>
+
+    <div class="category-grid">
+        <article class="category-card" ng-repeat="category in categoriesWithVideos | orderBy:'id'">
+            <header class="category-header">
+                <div>
+                    <p class="category-id">Categoría {{ category.id }}</p>
+                    <h2>{{ category.name }}</h2>
+                </div>
+
+                <span class="video-count">
+                    {{ category.videos.length }} vídeo(s)
+                </span>
+            </header>
+
+            <p class="category-description" ng-if="category.description">
+                {{ category.description }}
+            </p>
+
+            <div class="empty-category" ng-if="category.videos.length === 0">
+                No hay vídeos asociados a esta categoría.
+            </div>
+
+            <div class="video-grid" ng-if="category.videos.length > 0">
+                <article class="video-card" ng-repeat="video in category.videos | orderBy:'id'">
+                    <div class="video-number">
+                        {{ video.id }}
+                    </div>
+
+                    <div class="video-info">
+                        <h3>{{ video.name }}</h3>
+                        <a ng-href="{{ video.url }}" target="_blank" rel="noopener noreferrer">
+                            Abrir vídeo
+                        </a>
+                        <p class="video-url">{{ video.url }}</p>
+                    </div>
+                </article>
+            </div>
+        </article>
+    </div>
+</section>
