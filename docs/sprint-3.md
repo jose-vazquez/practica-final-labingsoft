@@ -34,3 +34,9 @@ Al finalizar este sprint, el usuario normal debe poder iniciar sesión y visuali
 - Los vídeos aparecen agrupados por categoría.
 - Cada vídeo muestra nombre y URL.
 - La documentación de pruebas queda completada.
+
+### Incremento obtenido
+
+Se implementó la vista opcional de usuario normal. Tras iniciar sesión con un usuario de rol `user`, la aplicación redirige a `#!/user`, carga categorías y vídeos desde la API REST usando el token de sesión, y muestra los vídeos agrupados por categoría con su nombre y URL.
+
+Esta funcionalidad completa la parte opcional indicada en el enunciado.

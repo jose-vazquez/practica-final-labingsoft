@@ -9,7 +9,8 @@ Documentar las pruebas realizadas sobre la práctica final para comprobar que la
 | ID | Funcionalidad | Usuario | Resultado esperado | Estado |
 |---|---|---|---|---|
 | P-01 | Login administrador | joseva | Acceso al panel de administración | Superada |
-| P-02 | Login usuario normal | usuario | Acceso a la vista de vídeos | Pendiente |
+| P-25 | Ordenación por ID | joseva | Categorías y vídeos aparecen ordenados por ID | Superada |
+| P-02 | Login usuario normal | usuario | Acceso a la vista de vídeos | Superada |
 | P-03 | Token de sesión | joseva | El token se guarda en el navegador | Superada |
 | P-04 | Listar usuarios | joseva | Se muestran los usuarios existentes | Superada |
 | P-05 | Crear usuario | joseva | Se crea un nuevo usuario | Superada |
@@ -33,7 +34,7 @@ Documentar las pruebas realizadas sobre la práctica final para comprobar que la
 | P-23 | Modificar vídeo desde AngularJS | joseva | Se modifica un vídeo desde el panel | Superada |
 | P-24 | Eliminar vídeo desde AngularJS | joseva | Se elimina un vídeo desde el panel | Superada |
 | P-25 | Ordenación por ID | joseva | Categorías y vídeos aparecen ordenados por ID | Superada |
-| P-26 | Vídeos por categoría en vista de usuario normal | usuario | Los vídeos aparecen agrupados por categoría | Pendiente |
+| P-26 | Vídeos por categoría en vista de usuario normal | usuario | Los vídeos aparecen agrupados por categoría | Superada |
 | P-27 | Evitar borrado del usuario autenticado | joseva | El sistema no permite eliminar el usuario actualmente autenticado | Superada |
 | P-28 | CRUD de usuarios desde AngularJS | joseva | Crear, editar y eliminar usuarios desde el panel | Superada |
 | P-29 | Compatibilidad contractual con session_id | joseva | Login devuelve session_id, las rutas protegidas lo aceptan y logout invalida la sesión en servidor | Superada |

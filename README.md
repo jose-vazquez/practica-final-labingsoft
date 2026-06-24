@@ -70,6 +70,10 @@ Funcionalidad opcional pendiente:
 - GitHub
 - Ramas por tarea
 
+### Vista de usuario normal
+
+La aplicación incluye una vista para usuarios con rol `user`. Tras iniciar sesión, el usuario normal accede a `#!/user`, donde se muestran las categorías y los vídeos asociados a cada categoría. De cada vídeo se muestra su nombre y su URL.
+
 ### Compatibilidad con `session_id`
 
 La API REST mantiene compatibilidad con el formato indicado en el enunciado de la práctica. El endpoint `POST /login` devuelve un `session_id`, las rutas protegidas pueden recibirlo en la URL, en el cuerpo de la petición o en la cabecera `Authorization`, y el endpoint `PUT /logout` elimina la sesión del servidor. Se ha comprobado que, tras cerrar sesión, reutilizar el mismo `session_id` devuelve error `401`.
