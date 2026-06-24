@@ -1,6 +1,14 @@
 ﻿'use strict';
 
 /*
+ * Defino la aplicación AngularJS principal de la práctica.
+ *
+ * Uso AngularJS 1.x con ngRoute porque el enunciado pide una aplicación
+ * cliente basada en AngularJS. Organizo el cliente como una SPA sencilla:
+ * una vista de login, una vista de administración y una vista de usuario normal.
+ */
+
+/*
  * Se crea el módulo principal de AngularJS.
  *
  * Nombre del módulo: CatalogoApp
@@ -8,6 +16,11 @@
  *
  * ngRoute permite crear una aplicación SPA:
  * varias vistas dentro de la misma página sin recargar todo el documento.
+ */
+/*
+ * Registro el módulo CatalogoApp e incluyo ngRoute.
+ *
+ * Necesito ngRoute para cambiar entre vistas sin recargar toda la página.
  */
 angular.module('CatalogoApp', ['ngRoute'])
 
@@ -99,6 +112,13 @@ angular.module('CatalogoApp', ['ngRoute'])
      *
      * Bearer <token>
      */
+    /*
+     * Construyo la cabecera Authorization para las rutas protegidas.
+     *
+     * Envío el token/session_id con formato Bearer porque el backend lo valida
+     * en requireToken. Este método se reutiliza en categorías, vídeos, usuarios
+     * y cierre de sesión.
+     */
     api.getAuthConfig = function(token) {
         return {
             headers: {
@@ -115,6 +135,12 @@ angular.module('CatalogoApp', ['ngRoute'])
      * El backend comprobará estos datos contra SQLite.
      * Si son correctos, devolverá el token y los datos del usuario.
      */
+    /*
+     * Ejecuto la petición de login contra el backend.
+     *
+     * Envío user y passwd tal como aparece en el enunciado. Si las credenciales
+     * son correctas, el backend devuelve token, session_id y los datos del usuario.
+     */
     api.login = function(user, passwd) {
         return $http.post('/login', {
             user: user,
@@ -129,6 +155,12 @@ angular.module('CatalogoApp', ['ngRoute'])
      *
      * Como es una ruta protegida, se envía el token en la cabecera
      * Authorization.
+     */
+    /*
+     * Ejecuto el cierre de sesión.
+     *
+     * Envío el token por Authorization y también session_id en el cuerpo para
+     * mantener compatibilidad con el formato contractual del enunciado.
      */
     api.logout = function(token) {
         return $http.put('/logout', { session_id: token }, api.getAuthConfig(token));
@@ -156,6 +188,12 @@ angular.module('CatalogoApp', ['ngRoute'])
     *
     * Es una ruta protegida, por eso se envía el token.
     */
+    /*
+     * Solicito al backend las categorías disponibles.
+     *
+     * Esta función la uso tanto en el panel de administración como en la vista
+     * de usuario normal, porque ambos necesitan conocer las categorías.
+     */
     api.getCategories = function(token) {
         return $http.get('/api/categories', api.getAuthConfig(token));
     };
@@ -243,6 +281,12 @@ angular.module('CatalogoApp', ['ngRoute'])
     *
     * El backend devuelve cada vídeo junto con su categoría.
     */
+    /*
+     * Solicito al backend los vídeos existentes.
+     *
+     * El backend devuelve cada vídeo con su category_id y category_name, lo que
+     * me permite mostrar la relación entre vídeos y categorías.
+     */
     api.getVideos = function(token) {
         return $http.get('/api/videos', api.getAuthConfig(token));
     };
@@ -303,6 +347,13 @@ angular.module('CatalogoApp', ['ngRoute'])
  * - el almacenamiento del token;
  * - la redirección al panel de administración.
  */
+/*
+ * Gestiono la pantalla de login.
+ *
+ * Desde este controlador recojo usuario y contraseña, llamo al backend y guardo
+ * la sesión en localStorage. Después redirijo según el rol: admin al panel de
+ * administración y user a la vista normal de vídeos.
+ */
 .controller('LoginController', function($scope, $location, apiService) {
     /*
      * Variables enlazadas con el formulario mediante ng-model.
@@ -352,6 +403,12 @@ angular.module('CatalogoApp', ['ngRoute'])
                  * localStorage permite mantener el token aunque se recargue
                  * la página.
                  */
+                /*
+                 * Guardo la sesión en localStorage.
+                 *
+                 * Uso session_id si viene informado porque es el nombre indicado
+                 * por el enunciado. Si no existiera, mantengo compatibilidad con token.
+                 */
                 const sessionId = response.data.session_id || response.data.token;
                 localStorage.setItem('token', sessionId);
                 localStorage.setItem('session_id', sessionId);
@@ -368,6 +425,12 @@ angular.module('CatalogoApp', ['ngRoute'])
                  * Redirección al panel de administración.
                  *
                  * AngularJS cambia la vista sin recargar toda la página.
+                 */
+                /*
+                 * Redirijo según el rol del usuario autenticado.
+                 *
+                 * Los administradores acceden al CRUD completo y los usuarios
+                 * normales acceden a la vista opcional de vídeos por categoría.
                  */
                 if (response.data.user.role === 'admin') {
                     $location.path('/admin');
@@ -401,6 +464,13 @@ angular.module('CatalogoApp', ['ngRoute'])
  * - lectura del usuario autenticado;
  * - validación del token contra el backend;
  * - cierre de sesión.
+ */
+/*
+ * Gestiono el panel de administración.
+ *
+ * Desde este controlador cargo y mantengo los CRUD de usuarios, categorías
+ * y vídeos. Todas las operaciones se hacen contra la API REST protegida,
+ * enviando el token guardado en localStorage.
  */
 .controller('AdminController', function($scope, $location, apiService) {
     /*
@@ -611,7 +681,10 @@ angular.module('CatalogoApp', ['ngRoute'])
      * Llama al servicio:
      * GET /api/categories
      */
-    $scope.loadCategories = function() {
+    $scope/*
+     * Cargo las categorías para administrarlas desde el panel.
+     */
+    .loadCategories = function() {
         apiService.getCategories(token)
             .then(function(response) {
                 $scope.categories = response.data;
@@ -627,7 +700,13 @@ angular.module('CatalogoApp', ['ngRoute'])
      * Llama al servicio:
      * GET /api/videos
      */
-    $scope.loadVideos = function() {
+    $scope/*
+     * Cargo los vídeos para administrarlos desde el panel.
+     *
+     * El listado incluye la categoría asociada para poder verificar que cada
+     * vídeo pertenece a una categoría.
+     */
+    .loadVideos = function() {
         apiService.getVideos(token)
             .then(function(response) {
                 $scope.videos = response.data;
@@ -857,6 +936,13 @@ angular.module('CatalogoApp', ['ngRoute'])
  * - de cada vídeo se muestra el nombre y la URL.
  */
 angular.module('CatalogoApp')
+/*
+ * Gestiono la vista de usuario normal.
+ *
+ * Esta parte cubre el opcional del enunciado. Cargo categorías y vídeos desde
+ * la API REST usando el token de sesión y agrupo los vídeos debajo de su
+ * categoría correspondiente.
+ */
 .controller('UserController', function($scope, $location, apiService) {
     const token = localStorage.getItem('token');
     const usuarioGuardado = localStorage.getItem('usuario');
@@ -892,6 +978,12 @@ angular.module('CatalogoApp')
      * Esta función construye una estructura cómoda para la vista:
      * cada categoría contiene su array de vídeos.
      */
+    /*
+     * Construyo la estructura agrupada que necesita la vista user.html.
+     *
+     * Recorro las categorías y, para cada una, filtro los vídeos que tienen
+     * el mismo category_id. Así muestro una sección por categoría con sus vídeos.
+     */
     function buildCategoriesWithVideos() {
         $scope.categoriesWithVideos = $scope.categories.map(function(category) {
             const videosOfCategory = $scope.videos.filter(function(video) {
@@ -910,7 +1002,13 @@ angular.module('CatalogoApp')
     /*
      * Carga categorías y vídeos usando el token/session_id.
      */
-    $scope.loadUserContent = function() {
+    $scope/*
+     * Cargo el contenido del usuario normal.
+     *
+     * Primero pido categorías y después vídeos. Cuando tengo ambos conjuntos,
+     * construyo la agrupación que se muestra en pantalla.
+     */
+    .loadUserContent = function() {
         apiService.getCategories(token)
             .then(function(categoriesResponse) {
                 $scope.categories = categoriesResponse.data;
